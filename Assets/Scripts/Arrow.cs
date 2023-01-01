@@ -57,50 +57,33 @@ public class Arrow : UdonSharpBehaviour
 
         switch (type2)
         {
-            case 0:
+            case 0: // 4ths
                 rend.material.SetColor("_EmissionColor", red);
                 rend.material.SetColor("_EmissionColor1", red2);
                 break;
-            case 125:
-                rend.material.SetColor("_EmissionColor", orange);
-                rend.material.SetColor("_EmissionColor1", orange2);
-                break;
-            case 167:
-                rend.material.SetColor("_EmissionColor", purple);
-                rend.material.SetColor("_EmissionColor1", purple2);
-                break;
-            case 250:
-                rend.material.SetColor("_EmissionColor", green);
-                rend.material.SetColor("_EmissionColor1", green2);
-                break;
-            case 333:
-                rend.material.SetColor("_EmissionColor", purple);
-                rend.material.SetColor("_EmissionColor1", purple2);
-                break;
-            case 375:
-                rend.material.SetColor("_EmissionColor", orange);
-                rend.material.SetColor("_EmissionColor1", orange2);
-                break;
-            case 500:
+            case 500: // 8ths
                 rend.material.SetColor("_EmissionColor", blue);
                 rend.material.SetColor("_EmissionColor1", blue2);
                 break;
-            case 625:
-                rend.material.SetColor("_EmissionColor", orange);
-                rend.material.SetColor("_EmissionColor1", orange2);
-                break;
+            case 166: // 12ths & 24ths
+            case 167:
+            case 333:
+            case 334:
             case 666:
+            case 667:
+            case 833:
+            case 834:
                 rend.material.SetColor("_EmissionColor", purple);
                 rend.material.SetColor("_EmissionColor1", purple2);
                 break;
+            case 250: // 16ths
             case 750:
                 rend.material.SetColor("_EmissionColor", green);
                 rend.material.SetColor("_EmissionColor1", green2);
                 break;
-            case 833:
-                rend.material.SetColor("_EmissionColor", purple);
-                rend.material.SetColor("_EmissionColor1", purple2);
-                break;
+            case 125: // 32nds
+            case 375:
+            case 625:
             case 850:
                 rend.material.SetColor("_EmissionColor", orange);
                 rend.material.SetColor("_EmissionColor1", orange2);
