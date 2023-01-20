@@ -1,16 +1,15 @@
-﻿
+﻿using System;
 using UdonSharp;
 using UnityEngine;
-using VRC.SDKBase;
-using VRC.Udon;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class Arrow : UdonSharpBehaviour
 {
     public float setTiming;
     public int direction;
-    public bool canBeHit; 
-    public float travelTimer;
+    public bool canBeHit;
+    public float visualOffset;
+    public float spawnTime;
 
     public float defaultRot;
 
@@ -30,26 +29,26 @@ public class Arrow : UdonSharpBehaviour
     public Transform spawnPoint;
     public Transform targetPoint;
 
-    Color red = new Color(0.3137255f, 0.003921569f, 0);
-    Color blue = new Color(0, 0.01568628f, 0.2941177f);
-    Color purple = new Color(0.0627451f, 0, 0.2705882f);
-    Color green = new Color(0.007843138f, 0.05882353f, 0);
-    Color orange = new Color(0, 0.01568628f, 0.2941177f);
-    Color cyan = new Color(0, 0.094f, 0.08972728f);
+    private Color red = new Color(0.1686275f, 0.003081087f, 0);
+    private Color blue = new Color(0, 0.01568628f, 0.1705882f);
+    private Color purple = new Color(0.03310555f, 0.0004894992f, 0.1037736f);
+    private Color green = new Color(0.01301234f, 0.09433961f, 0);
+    private Color orange = new Color(0.2941177f, 0.04434219f, 0);
+    private Color cyan = new Color(0, 0.05490196f, 0.04299222f);
 
-    Color red2 = new Color(0.6980392f, 0.06666667f, 0);
-    Color blue2 = new Color(0, 0.1568628f, 0.6980392f);
-    Color purple2 = new Color(0.1607843f, 0.01176471f, 0.5019608f);
-    Color green2 = new Color(0.07450981f, 0.2392157f, 0);
-    Color orange2 = new Color(0, 0.01568628f, 0.2941177f);
-    Color cyan2 = new Color(0, 0.4235294f, 0.3789981f);
+    private Color red2 = new Color(1f, 0.05869148f, 0);
+    private Color blue2 = new Color(0, 0.08039216f, 0.4901961f);
+    private Color purple2 = new Color(0.07647059f, 0.001960784f, 0.1078431f);
+    private Color green2 = new Color(0.01862745f, 0.1019608f, 0);
+    private Color orange2 = new Color(0.1470588f, 0.07625756f, 0);
+    private Color cyan2 = new Color(0, 0.1098039f, 0.09360918f);
 
     /// <summary>
     /// Set the arrow color based on their set timing, and rotation based on the direction. They also become an object that can be hit and they get their assigned time to travel between spawn and destination
     /// </summary>
-    public void InitArrow(float travelOffset)
+    public void InitArrow(float visualOffset)
     {
-        travelTimer = travelOffset;
+        this.visualOffset = visualOffset;
         canBeHit = true;
 
         float t = setTiming % 1f;
@@ -99,197 +98,97 @@ public class Arrow : UdonSharpBehaviour
             case 0:
                 mesh.transform.rotation = Quaternion.Euler(0, 0, -90);
                 defaultRot = -90;
-                mesh.transform.Rotate(playfield.transform.rotation.eulerAngles,Space.World);
+                //mesh.transform.Rotate(playfield.transform.rotation.eulerAngles,Space.World);
                 spawnPoint = playfield.spawnL.transform;
                 targetPoint = playfield.ReceptorL.transform;
                 break;
             case 1:
                 mesh.transform.rotation = Quaternion.identity;
                 defaultRot = 0;
-                mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
+                //mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
                 spawnPoint = playfield.spawnD.transform;
                 targetPoint = playfield.ReceptorD.transform;
                 break;
             case 2:
                 mesh.transform.rotation = Quaternion.Euler(0, 0, 180);
                 defaultRot = 180;
-                mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
+                //mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
                 spawnPoint = playfield.spawnU.transform;
                 targetPoint = playfield.ReceptorU.transform;
                 break;
             case 3:
                 mesh.transform.rotation = Quaternion.Euler(0, 0, 90);
                 defaultRot = 90;
-                mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
+                //mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
                 spawnPoint = playfield.spawnR.transform;
                 targetPoint = playfield.ReceptorR.transform;
                 break;
         }
+        mesh.transform.Rotate(playfield.transform.rotation.eulerAngles, Space.World);
+        spawnTime = songPlayer.songTime;
 
-        gameObject.transform.position = spawnPoint.position;
-
-        if (playfield.arrowPathX != "" && playfield.pathMagnitudeX != 0) gameObject.transform.position += new Vector3(ApplySmoothing(0, playfield.pathFrequencyX, playfield.arrowPathX) * playfield.pathMagnitudeX, 0, 0);
-        if (playfield.arrowPathY != "" && playfield.pathMagnitudeY != 0) gameObject.transform.position += new Vector3(0, ApplySmoothing(0, playfield.pathFrequencyY, playfield.arrowPathY) * playfield.pathMagnitudeY, 0);
-        if (playfield.arrowPathZ != "" && playfield.pathMagnitudeZ != 0) gameObject.transform.position += new Vector3(0, 0, ApplySmoothing(0, playfield.pathFrequencyZ, playfield.arrowPathZ) * playfield.pathMagnitudeZ);
+        LogicUpdate();
 
         OffsetApply();
-
     }
-    
+
     public void Update()
     {
-        if (((setTiming - songPlayer.currentSongBeat + songPlayer.songOffset + 0.100f) / songPlayer.bpm * 60f) < -0.15f)
+        LogicUpdate();
+    }
+
+    public void LogicUpdate()
+    {
+        if (!canBeHit)
+            return;
+        
+        float bps = songPlayer.beatsPerSecond;
+        
+        float songTime = songPlayer.songTime;
+        float noteTime = setTiming * bps;
+        
+        if (songTime > noteTime + 0.150f)
         {
             playfield.SendMiss();
             DisableArrow();
         }
+        
+        float progress = (songTime - spawnTime) / (noteTime - spawnTime);
 
-        //Here's the movement logic for the arrows...
-        //TODO: something can be done here... maybe referencing the song time directly instead of the xmod... I dunno, but this seems VERY off...
+        Vector3 position = Vector3.LerpUnclamped(spawnPoint.position, targetPoint.position, progress);
+        Vector3 smoothing = ApplySmoothing(progress);
 
-        travelTimer += (Time.deltaTime * songPlayer.bpm) / 60;
-        float perc = travelTimer / songPlayer.xmod; 
+        Vector3 finalPosition = position + smoothing;
 
-        gameObject.transform.position = Vector3.LerpUnclamped(spawnPoint.position, targetPoint.position, perc);
-
-        ///Oh GOD we need to optimize this... three switch cases PER frame like this is AWFUL HOW THE FUCK IS SMOOTHING DONE WITHOUT TANKING PERFORMANCE???
-        ///For now, if players do not have an arrowpath and the magnitude is not 0, then it will do this. So you must have a set path and active magnitude to hit this performance
-        if (playfield.arrowPathX != "" && playfield.pathMagnitudeX != 0) gameObject.transform.position += new Vector3(ApplySmoothing(perc, playfield.pathFrequencyX, playfield.arrowPathX) * playfield.pathMagnitudeX, 0, 0);
-        if (playfield.arrowPathY != "" && playfield.pathMagnitudeY != 0) gameObject.transform.position += new Vector3(0, ApplySmoothing(perc, playfield.pathFrequencyY, playfield.arrowPathY) * playfield.pathMagnitudeY, 0);
-        if (playfield.arrowPathZ != "" && playfield.pathMagnitudeZ != 0) gameObject.transform.position += new Vector3(0, 0, ApplySmoothing(perc, playfield.pathFrequencyZ, playfield.arrowPathZ) * playfield.pathMagnitudeZ);
-
-        //gameObject.transform.localRotation = Quaternion.Euler( 0, 0, defaultRot + playfield.dizzy);
-
+        gameObject.transform.position = finalPosition;
     }
 
-    public float ApplySmoothing(float t, float freq, string type)
+    public Vector3 ApplySmoothing(float perc)
     {
-        switch (type)
+        if (playfield.pathMagnitude.sqrMagnitude == 0)
+            return Vector3.zero;
+
+        Vector3 smooth = ApplySmoothing(perc, playfield.pathFrequency, playfield.arrowPath);
+        return smooth;
+    }
+
+    public Vector3 ApplySmoothing(float t, Vector3 freq, int[] type)
+    {
+        Vector3 smooth = Vector3.zero;
+        for (int i = 0; i < 3; i++)
         {
-            case "Linear":
-                break;
-            case "Float":
-                t = 1 - Mathf.Sin(Mathf.PI * t * 2 * freq);
-                break;
-            case "Bounce": //Sine like bounce, smoother
-                t = Mathf.Sin(Mathf.PI * t);
-                break;
-            case "BounceV2": //Sharper bounce
-                t = (-t * Mathf.Exp(1) * 1.457f * (t - 1));
-                break;
-
-            case "WhipOut": //Progressively whips the object, starts at 0 and ends at 1
-                t = t * Mathf.Cos(Mathf.PI * (t - 1) * freq);
-                break;
-            case "WhipIn": //Use .5 values to start at 0 with strong motions and end at 0 with strong motions. Use whole values too start at -1 or 1 and end at 0
-                t = (1 - t) * Mathf.Cos(Mathf.PI * (t - 1) * freq);
-                break;
-            case "WhipInOut": //Any values work, it progressive shakes more and then slows down, starts at 0 ends at 0
-                t = (1 - t) * Mathf.Cos(Mathf.PI * t * freq) * t * 4;
-                break;
-
-            case "EaseOvershoot": //Always use even and half numbers to ensure proper behaviour (2.5, 4.5, 6,5...etc) The starting value is (should) be 0 and the end value is 1.
-                t = (1 - t) * Mathf.Sin(Mathf.PI * (t - 1) * freq) + 1;
-                break;
-
-            case "EaseOut":
-                t = 1 - Mathf.Cos((t * Mathf.PI) / 2);
-                break;
-            case "EaseIn":
-                t = Mathf.Sin(t * Mathf.PI * 0.5f);
-                break;
-            case "EaseInOut":
-                t = -(Mathf.Cos(Mathf.PI * t) - 1) / 2;
-                break;
-
-            case "EaseInCirc":
-                t = 1 - Mathf.Sqrt(1 - Mathf.Pow(t, 2));
-                break;
-            case "EaseOutCirc":
-                t = Mathf.Sqrt(1 - Mathf.Pow(t - 1, 2));
-                break;
-            case "EaseInOutCirc":
-                t = t < 0.5
-                ? (1 - Mathf.Sqrt(1 - Mathf.Pow(2 * t, 2))) / 2
-                : (Mathf.Sqrt(1 - Mathf.Pow(-2 * t + 2, 2)) + 1) / 2;
-                break;
-
-            case "EaseInQuad":
-                t = t * t;
-                break;
-            case "EaseOutQuad":
-                t = 1 - (1 - t) * (1 - t);
-                break;
-            case "EaseInOutQuad":
-                t = t < 0.5 ? 2 * t * t : 1 - Mathf.Pow(-2 * t + 2, 2) / 2;
-                break;
-
-            case "EaseInExpo":
-                t = t == 0 ? 0 : Mathf.Pow(2, 10 * t - 10);
-                break;
-            case "EaseOutExpo":
-                t = t == 1 ? 1 : 1 - Mathf.Pow(2, -10 * t);
-                break;
-            case "EaseInOutExpo":
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : t < 0.5 ? Mathf.Pow(2, 20 * t - 10) / 2
-                  : (2 - Mathf.Pow(2, -20 * t + 10)) / 2;
-                break;
-
-            case "EaseInBack":
-                t = 2.70158f * t * t * t - 1.70158f * t * t;
-                break;
-            case "EaseOutBack":
-                t = 1 + 2.70158f * Mathf.Pow(t - 1, 3) + 1.70158f * Mathf.Pow(t - 1, 2);
-                break;
-            case "EaseInOutBack":
-                float c1 = 1.70158f;
-                float c2 = c1 * 1.525f;
-
-                t = t < 0.5
-                  ? (Mathf.Pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2
-                  : (Mathf.Pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
-                break;
-
-            case "EaseInElastic":
-                float c5 = (2 * Mathf.PI) / 3;
-
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : -Mathf.Pow(2, 10 * t - 10) * Mathf.Sin((t * 10 - 10.75f) * c5);
-                break;
-            case "EaseOutElastic":
-                float c6 = (2 * Mathf.PI) / 3;
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : Mathf.Pow(2, -10 * t) * Mathf.Sin((t * 10 - 0.75f) * c6) + 1;
-                break;
-            case "EaseInOutElastic":
-                float c7 = (2f * Mathf.PI) / 4.5f;
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : t < 0.5
-                  ? -(Mathf.Pow(2, 20 * t - 10) * Mathf.Sin((20 * t - 11.125f) * c7)) / 2
-                  : (Mathf.Pow(2, -20 * t + 10) * Mathf.Sin((20 * t - 11.125f) * c7)) / 2 + 1;
-                break;
-
-            case "Inverse":
-                t = Mathf.Tan(t * Mathf.PI) / 10f;
-                break;
-            default:
-                break;
+            if (playfield.arrowPath[i] == -1)
+                continue;
+            if (playfield.pathMagnitude[i] == 0)
+                continue;
+            smooth[i] = ApplySmoothing(t, freq[i], type[i]) * playfield.pathMagnitude[i];
         }
+        return smooth;
+    }
 
-        return 1 - t;
+    public float ApplySmoothing(float t, float freq, int type)
+    {
+        return EasingFunctions.Ease(type, t, freq);
     }
 
     public void OffsetApply()

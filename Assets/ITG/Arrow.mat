@@ -1074,8 +1074,8 @@ Material:
     - _VertexRoundingDivision: 500
     - _VertexRoundingEnabled: 0
     - _VertexUnwrap: 0
-    - _ZTest: 4
-    - _ZWrite: 1
+    - _ZTest: 2
+    - _ZWrite: 0
     - _commentIfZero_EnableOutlinePass: 0
     - _commentIfZero_LightingAdditiveEnable: 1
     - _glitterFrequencyLinearEmissive: 20

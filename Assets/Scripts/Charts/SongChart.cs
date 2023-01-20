@@ -25,7 +25,9 @@ public class SongChart : UdonSharpBehaviour
     public float songOffset;
     public float bpm;
     public AudioClip songFile;
-    public int[] difficultyLevel = new int[4];
+    public int[] chartLevel = new int[4];
+    public int[] modsLevel = new int[4];
+    public int[] finalLevel = new int[4];
     public int defaultDiff = -1;
 
     public string stageName;

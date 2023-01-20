@@ -15,15 +15,18 @@ public class Mods : UdonSharpBehaviour
     public float magnitude;
     public GameObject actor;
 
+    public float beatPivot;
+
     public string smoothing;
     public string motion;
+
+    public int ease = -1;
+
     public bool flipMotion;
     public float motionFreq;
 
     [VRC.Udon.Serialization.OdinSerializer.OdinSerialize]
     public bool playing;
-    [VRC.Udon.Serialization.OdinSerializer.OdinSerialize]
-    public float waitTimer;
     [VRC.Udon.Serialization.OdinSerializer.OdinSerialize]
     public float progress = 1;
     [VRC.Udon.Serialization.OdinSerializer.OdinSerialize]
@@ -61,24 +64,31 @@ public class Mods : UdonSharpBehaviour
 
     public ModChart mods;
 
-    public void CheckUpdates()
+    [HideInInspector]
+    public float bpmMult;
+
+    public void InitializeBPMMult(float bpmMult)
+    {
+        this.bpmMult = bpmMult; // tari avoids extra divisions per frame
+    }
+
+    public void Update()
     {
         if (playing)
-        {          
-            waitTimer += (Time.deltaTime * mods.song.bpm) / 60f;
+        { 
             PlayMod();
+            return;
         }
-        else if(iteration < repetitions && !playing && progress == duration)
-        {
-            //Tick down the timer for the next repetition
-            waitTimer += (Time.deltaTime * mods.song.bpm) / 60f;
-            if(waitTimer >= frequency)
 
-            {   ///For some reason, using waitTimer = 0 slowly desyncs repetition mods????? (Seen in Cyber's World) 
-                ///But seems like this causes mods to not play at the same time when multiple mods are made on the same beat?? This logic makes no sense since the value shouldn't be adding up over time or getting done earlier??
-                waitTimer -= frequency; 
+        if (!playing && iteration < repetitions && progress == duration)
+        {
+
+            if (mods.song.currentSongBeat >= (frequency + beatPivot))
+            {
                 playing = true;
                 progress = 0;
+
+                beatPivot = beat + frequency * iteration;
 
                 //New iteration, check for addValues if we want to update the final value as the new original and the final value updates to a new value
                 if (addValues)
@@ -88,10 +98,6 @@ public class Mods : UdonSharpBehaviour
 
                 PlayMod();
             }
-        }
-        else
-        {
-            //No more repetitions left
         }
     }
 
@@ -213,6 +219,9 @@ public class Mods : UdonSharpBehaviour
             case 49:
                 mods.fadeEdge(this, playfield);
                 break;
+            case 50:
+                mods.stopParticles(this, particles);
+                break;
             default:
                 //???
                 break;
@@ -270,99 +279,79 @@ public class Mods : UdonSharpBehaviour
                 originalRot = actor.transform.localRotation;
                 break;
             case "pathMagX":
-                playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathMagnitudeX;
+                originalFloat = playfield.pathMagnitude[0];
                 magnitude = originalFloat + originalMag;
                 break;
             case "pathMagY":
-                playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathMagnitudeY;
+                originalFloat = playfield.pathMagnitude[1];
                 magnitude = originalFloat + originalMag;
                 break;
             case "pathMagZ":
-                playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathMagnitudeZ;
+                originalFloat = playfield.pathMagnitude[2];
                 magnitude = originalFloat + originalMag;
                 break;
             case "pathFreqX":
-                playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathFrequencyX;
+                originalFloat = playfield.pathFrequency[0];
                 magnitude = originalFloat + originalMag;
                 break;
             case "pathFreqY":
-                playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathFrequencyY;
+                originalFloat = playfield.pathFrequency[1];
                 magnitude = originalFloat + originalMag;
                 break;
             case "pathFreqZ":
-                playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathFrequencyZ;
+                originalFloat = playfield.pathFrequency[2];
                 magnitude = originalFloat + originalMag;
                 break;
             case "dark":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.dark;
                 magnitude = originalFloat + originalMag;
                 break;
             case "stealth":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.stealth;
                 magnitude = originalFloat + originalMag;
                 break;
             case "explode":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.explode;
                 magnitude = originalFloat + originalMag;
                 break;
             case "whiteout":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.whiteOut;
-                magnitude = originalFloat + originalMag;              
+                magnitude = originalFloat + originalMag;
                 break;
             case "arrowRotationX":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.arrowRotationX;
                 magnitude = originalFloat + originalMag;
                 break;
             case "arrowRotationY":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.arrowRotationY;
                 magnitude = originalFloat + originalMag;
                 break;
             case "arrowRotationZ":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.arrowRotationZ;
                 magnitude = originalFloat + originalMag;
                 break;
             case "reverse": //Unused
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.reverse;
                 break;
             case "flip": //Unused
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.flip;
                 break;
             case "invert": //Unused
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.invert;
                 break;
             case "arrowSizeX":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.arrowSizeX;
                 magnitude = originalFloat + originalMag;
                 break;
             case "arrowSizeY":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.arrowSizeY;
                 magnitude = originalFloat + originalMag;
                 break;
             case "arrowSizeZ":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.arrowSizeZ;
                 magnitude = originalFloat + originalMag;
                 break;
             case "setAnimFloat":
-                anim = actor.GetComponent<Animator>();
                 originalFloat = anim.GetFloat(param);
                 magnitude = originalFloat + originalMag;
                 break;
@@ -391,37 +380,30 @@ public class Mods : UdonSharpBehaviour
                 finalVal = magnitude;
                 break;
             case "fadeXStart":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeXStart;
                 magnitude = originalFloat + originalMag;
                 break;
             case "fadeYStart":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeYStart;
                 magnitude = originalFloat + originalMag;
                 break;
             case "fadeZStart":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeZStart;
                 magnitude = originalFloat + originalMag;
                 break;
             case "fadeXEnd":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeXEnd;
                 magnitude = originalFloat + originalMag;
                 break;
             case "fadeYEnd":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeYEnd;
                 magnitude = originalFloat + originalMag;
                 break;
             case "fadeZEnd":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeZEnd;
                 magnitude = originalFloat + originalMag;
                 break;
             case "fadeEdge":
-                playfield = actor.GetComponent<Playfield>();
                 originalFloat = playfield.fadeEdge;
                 magnitude = originalFloat + originalMag;
                 break;
@@ -441,30 +423,32 @@ public class Mods : UdonSharpBehaviour
         repetitions = 0;
         frequency = 0;
         modFunc = -1;
+        beatPivot = 0;
     }
 
     public void StartMod()
     {
         //Find a better way to do this?
 
-        waitTimer = 0f;
         progress = 0f;
         playing = true;
         iteration = 0;
-        motion = "";
+        motion = string.Empty;
+        ease = -1;
         flipMotion = false;
         motionFreq = 1;
         originalMag = magnitude;
+        beatPivot = beat;
 
-        if(smoothing != "")
+        if (smoothing.Length > 0)
         {
             if (smoothing.StartsWith("Flip"))
             {
                 flipMotion = true;
             }
 
-            string mag = "";
-
+            string mag;
+            string motion;
             if (flipMotion)
             {
 
@@ -494,6 +478,9 @@ public class Mods : UdonSharpBehaviour
                     motion = smoothing; //You literally only have the smoothing
                 }
             }
+
+            this.motion = motion;
+            this.ease = EasingFunctions.FromString(motion);
         }
 
         switch (function)
@@ -604,45 +591,48 @@ public class Mods : UdonSharpBehaviour
                 modFunc = 19;
                 break;
             case "pathTypeX":
+                ease = EasingFunctions.FromString(param);
                 playfield = actor.GetComponent<Playfield>();
                 modFunc = 20;
                 break;
             case "pathTypeY":
+                ease = EasingFunctions.FromString(param);
                 playfield = actor.GetComponent<Playfield>();
                 modFunc = 20;
                 break;
             case "pathTypeZ":
+                ease = EasingFunctions.FromString(param);
                 playfield = actor.GetComponent<Playfield>();
                 modFunc = 20;
                 break;
             case "pathMagX":
                 playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathMagnitudeX;
+                originalFloat = playfield.pathMagnitude[0];
                 modFunc = 23;
                 break;
             case "pathMagY":
                 playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathMagnitudeY;
+                originalFloat = playfield.pathMagnitude[1];
                 modFunc = 23;
                 break;
             case "pathMagZ":
                 playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathMagnitudeZ;
+                originalFloat = playfield.pathMagnitude[2];
                 modFunc = 23;
                 break;
             case "pathFreqX":
                 playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathFrequencyX;
+                originalFloat = playfield.pathFrequency[0];
                 modFunc = 26;
                 break;
             case "pathFreqY":
                 playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathFrequencyY;
+                originalFloat = playfield.pathFrequency[1];
                 modFunc = 26;
                 break;
             case "pathFreqZ":
                 playfield = actor.GetComponent<Playfield>();
-                originalFloat = playfield.pathFrequencyZ;
+                originalFloat = playfield.pathFrequency[2];
                 modFunc = 26;
                 break;
             case "dark":
@@ -746,12 +736,10 @@ public class Mods : UdonSharpBehaviour
                 modFunc = 5;
                 break;
             case "bpm":
-                song = actor.GetComponent<SongPlayer>();
                 modFunc = 43;
                 break;
             case "xmod":
-                song = actor.GetComponent<SongPlayer>();
-                originalFloat = song.xmod;
+                originalFloat = mods.song.xmod;
                 modFunc = 44;
                 break;
             case "fadeXStart":
@@ -789,11 +777,16 @@ public class Mods : UdonSharpBehaviour
                 originalFloat = playfield.fadeEdge;
                 modFunc = 49;
                 break;
+            case "stopParticles":
+                particles = actor.GetComponent<ParticleSystem>();
+                modFunc = 50;
+                break;
             default:
                 Debug.LogError($"MOD ERROR: Mod {function} not found at {beat}");
                 modFunc = -1;
                 break;
         }
     }
-    
+
 }
+

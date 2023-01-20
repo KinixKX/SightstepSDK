@@ -22,12 +22,12 @@ public class SongPlayer : UdonSharpBehaviour
 
     public float xmod;
 
+    [HideInInspector]
+    public float beatsPerSecond;
+
     public int loadedLevel = -1;
 
-    public bool pressedL;
-    public bool pressedD;
-    public bool pressedU;
-    public bool pressedR;
+    public bool[] pressed;
 
     public float songOffset; //This is the song offset set by the charter
     public float globalOffset; //This is the player changed offset
@@ -63,6 +63,8 @@ public class SongPlayer : UdonSharpBehaviour
         songPlaying = false;
         currentArrow = 0;
         lastArrowHit = 0;
+        pressed = new bool[4];
+
     }
 
     private float oldSongTime;
@@ -98,10 +100,9 @@ public class SongPlayer : UdonSharpBehaviour
         // 0.110f => Unity latency
         // globalOffset => Fine-tune offset, set in the UI
         // Wireless mode => adds 120ms of audio latency
-        songTime -= 0.110f + globalOffset + (wirelessPreset ? 0.12f : 0f);
-        currentSongBeat = songTime * bpm / 60;
+        songTime -= 0.110f + globalOffset + (wirelessPreset ? 0.12f : 0f) + songOffset;
+        currentSongBeat = songTime * bpm / 60f;
 
-        stageSelector.defaultMods.CheckUpdate();
 
         ///BUG: Arrows will not load properly if placed in beats earlier than the set xmod value (i.e. arrows set on beat 1.5 when xmod is 2 will load them incorrectly)
 
@@ -242,19 +243,19 @@ public class SongPlayer : UdonSharpBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftArrow))
         {
-            pressedL = false;
+            pressed[0] = false;
         }
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
-            pressedD = false;
+            pressed[1] = false;
         }
         if (Input.GetKeyUp(KeyCode.UpArrow))
         {
-            pressedU = false;
+            pressed[2] = false;
         }
         if (Input.GetKeyUp(KeyCode.RightArrow))
         {
-            pressedR = false;
+            pressed[3] = false;
         }
     }
 
@@ -263,7 +264,7 @@ public class SongPlayer : UdonSharpBehaviour
         a.direction = (int)stageSelector.defaultCharts.notes[index][0];
         a.setTiming = (float)stageSelector.defaultCharts.notes[index][1];
 
-        a.InitArrow(-songOffset + (wirelessPreset ? 0.04f : 0.005f)); //Sora magic part 2
+        a.InitArrow(wirelessPreset ? 0.04f : 0.005f); //Sora magic part 2
 
         /*
            //If holds were to be implemented, you can put them here
@@ -282,6 +283,7 @@ public class SongPlayer : UdonSharpBehaviour
     {
         _song.Play();
         songPlaying = true;
+        beatsPerSecond = 60f / bpm;
 
         ///Use a new system for enabling / disabling objects.... cause oh fuck this is bad
 
@@ -303,74 +305,22 @@ public class SongPlayer : UdonSharpBehaviour
 
     public void TriggerPlayerInput(int direction)
     {
-        switch (direction)
-        {
-            case 0:
-                pressedL = true;
-                playfield1.receptorAnimator.Play("ReceptorLPress", 2);
-                playfield2.receptorAnimator.Play("ReceptorLPress", 2);        
-                CheckArrowPress(0);
-                break;
-            case 1:
-                pressedD = true;
-                playfield1.receptorAnimator.Play("ReceptorDPress", 3);
-                playfield2.receptorAnimator.Play("ReceptorDPress", 3);
-                CheckArrowPress(1);
-                break;
-            case 2:
-                pressedU = true;
-                playfield1.receptorAnimator.Play("ReceptorUPress", 4);
-                playfield2.receptorAnimator.Play("ReceptorUPress", 4);
-                CheckArrowPress(2);
-                break;
-            case 3:
-                pressedR = true;
-                playfield1.receptorAnimator.Play("ReceptorRPress", 5);
-                playfield2.receptorAnimator.Play("ReceptorRPress", 5);
-                CheckArrowPress(3);
-                break;
-        }
+        char[] directions = { 'L', 'D', 'U', 'R' }; // agh.
+        pressed[direction] = true;
+        playfield1.receptorAnimator.Play($"Receptor{directions[direction]}Press", 2 + direction);
+        playfield2.receptorAnimator.Play($"Receptor{directions[direction]}Press", 2 + direction);
+        CheckArrowPress(direction);
     }
 
     public void FreePlayerInput(int direction)
     {
-        switch (direction)
-        {
-            case 0:
-                pressedL = false;
-                break;
-            case 1:
-                pressedD = false;
-                break;
-            case 2:
-                pressedU = false;
-                break;
-            case 3:
-                pressedR = false;
-                break;
-        }
+        pressed[direction] = false;
     }
 
     //Unused, but could be used for other scripts and mod stuff!
     public bool CheckPlayerInput(int direction)
     {
-        switch (direction)
-        {
-            case 0:
-                if (pressedL) return true;
-                else return false;
-            case 1:
-                if (pressedD) return true;
-                else return false;
-            case 2:
-                if (pressedU) return true;
-                else return false;
-            case 3:
-                if (pressedR) return true;
-                else return false;
-            default:
-                return false;
-        }
+        return pressed[direction];
     }
 
     public void CheckArrowPress(int direction)
@@ -384,32 +334,37 @@ public class SongPlayer : UdonSharpBehaviour
 
         lastArrowHit = playfield1.arrowObjects.nextArrow;
 
-        for (int i = Mathf.Clamp(lastArrowHit - 4, 0, stageSelector.defaultCharts.notes.Length - 1); i <= Mathf.Clamp(lastArrowHit + 4, 0, stageSelector.defaultCharts.notes.Length - 1); i++)
+        int clamp1 = Mathf.Clamp(lastArrowHit - 4, 0, stageSelector.defaultCharts.notes.Length - 1); // no idea what to name these two
+        int clamp2 = Mathf.Clamp(lastArrowHit + 4, 0, stageSelector.defaultCharts.notes.Length - 1);
+
+        for (int i = clamp1; i <= clamp2; i++)
         {
             int index = i % playfield1.arrowObjects.pooledObjects.Length;
 
-            if (playfield1.arrowObjects.pooledObjects[index].canBeHit)
-            {
-                if (((playfield1.arrowObjects.pooledObjects[index].setTiming - currentSongBeat) / bpm * 60f) + songOffset < 0.15f && ((playfield1.arrowObjects.pooledObjects[index].setTiming - currentSongBeat) / bpm * 60f) + songOffset > -0.15f)
-                {
-                    if (playfield1.arrowObjects.pooledObjects[index].direction == direction)
-                    {
-                        playfield1.arrowObjects.pooledObjects[index].DisableArrow();
-                        playfield2.arrowObjects.pooledObjects[index].DisableArrow();
-                        UpdateScore(((playfield1.arrowObjects.pooledObjects[index].setTiming - currentSongBeat) / bpm * 60) + songOffset, playfield1.arrowObjects.pooledObjects[index].direction);
+            Arrow currentArrowP1 = playfield1.arrowObjects.pooledObjects[index];
 
-                        playfield1.arrowObjects.nextArrow++;
-                        playfield2.arrowObjects.nextArrow++;
+            if (!currentArrowP1.canBeHit)
+                continue;
+            if (currentArrowP1.direction != direction)
+                continue;
 
-                        return;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
+            float arrowTime = currentArrowP1.setTiming * beatsPerSecond;
+            float hitTimingDifference = arrowTime - songTime;
+
+            if (hitTimingDifference > 0.150f || hitTimingDifference < -0.150f)
+                break;
+
+            Arrow currentArrowP2 = playfield2.arrowObjects.pooledObjects[index];
+
+            currentArrowP1.DisableArrow();
+            currentArrowP2.DisableArrow();
+            UpdateScore(hitTimingDifference, direction);
+
+            playfield1.arrowObjects.nextArrow++;
+            playfield2.arrowObjects.nextArrow++;
+
         }
+
 
         if (playfield1.arrowObjects.nextArrow == stageSelector.defaultCharts.notes.Length)
         {

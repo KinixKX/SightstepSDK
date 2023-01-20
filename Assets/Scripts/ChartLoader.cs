@@ -269,7 +269,7 @@ public static class ChartLoader
 
         for (int i = 0; i < 4; i++) // set per-chart data
         {
-            songChart.difficultyLevel[i] = (int)chartMetadata[i][0];
+            songChart.chartLevel[i] = (int)chartMetadata[i][0];
         }
 
         songChart.songName = (string)globalChartMetadata[0];

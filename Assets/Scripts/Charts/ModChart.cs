@@ -13,19 +13,19 @@ public class ModChart : UdonSharpBehaviour
     public Mods[] mods;
 
     [HideInInspector]
-[VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */ 
+    [VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */
     public object[][] modsChart; //This remains empty to be asigned by one of the charts below 
     [HideInInspector]
-[VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */ 
+    [VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */
     public object[][] simpleModChart;
     [HideInInspector]
-[VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */ 
+    [VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */
     public object[][] normalModChart;
     [HideInInspector]
     [VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */
     public object[][] hardModChart;
     [HideInInspector]
-[VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */ 
+    [VRC.Udon.Serialization.OdinSerializer.OdinSerialize] /* UdonSharp auto-upgrade: serialization */
     public object[][] unsightedModChart;
 
     public int indexLocation = 0;
@@ -33,7 +33,7 @@ public class ModChart : UdonSharpBehaviour
     public int lastModPlayed = 0;
     public float lastSongBeat;
 
-    float lastModBeat;
+    float lastModBeat = -9999f;
 
     public SongPlayer song;
     public float xmodS;
@@ -91,533 +91,207 @@ public class ModChart : UdonSharpBehaviour
     //TODO: Find a way to do good rotations around something ;_;
 
     //This resets a given gameobject to 0,0,0! But not all gameobjects should be at 0,0,0 by default. Read the next function on what I would love my approach to be.
-    public void resetPosition(Mods modifier, GameObject actor)
+
+    public void IncrementProgress(Mods modifier)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        //modifier.progress += Time.deltaTime * modifier.bpmMult;
+
+        modifier.progress = (song.currentSongBeat) - modifier.beatPivot; //This wont work for iterative mods yet
+
         if (modifier.progress > modifier.duration)
         {
             modifier.iteration++;
             modifier.progress = modifier.duration;
         }
+    }
 
-        float perc = 0;
-        if (modifier.duration != 0)
+    public void CheckDuration(Mods modifier, bool recalculate = true)
+    {
+        if (modifier.progress != modifier.duration)
+            return;
+
+        if (modifier.iteration >= modifier.repetitions || modifier.duration != modifier.frequency)
         {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
+            modifier.playing = false;
+            return;
         }
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        modifier.progress = 0;
+        modifier.playing = true;
+        modifier.beatPivot = modifier.beat + modifier.frequency * modifier.iteration;
+
+        if (recalculate && modifier.addValues)
+            modifier.RecalculateValues();
+    }
+
+    public void resetPosition(Mods modifier, GameObject actor)
+    {
+        IncrementProgress(modifier);
+
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
+
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         actor.transform.localPosition = Vector3.LerpUnclamped(modifier.currentPos, Vector3.zero, perc);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
+
     public void resetRotation(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         actor.transform.localRotation = Quaternion.SlerpUnclamped(modifier.originalRot, Quaternion.identity, perc);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     //This is exclusively for the playfield. I need to find a way to be able to have a global resetPosition function, and searches for the respective default position of the gameobject's name
     //Using a constant with a name, that way you don't have to be estimating where the gameobjects are and give them the needed value to "reset" them to their regular positions
     public void resetPlayfield(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.transform.localPosition = Vector3.LerpUnclamped(modifier.currentPos, _defaultPlayfieldPosition, perc);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void moveX(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f ;
-        if(modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         float x = Mathf.LerpUnclamped(modifier.originalVal, modifier.finalVal, perc);
         actor.transform.localPosition = new Vector3(x, actor.transform.localPosition.y, actor.transform.localPosition.z);
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
 
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void moveY(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        IncrementProgress(modifier);
 
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         float y = Mathf.LerpUnclamped(modifier.originalVal, modifier.finalVal, perc);
         actor.transform.localPosition = new Vector3(actor.transform.localPosition.x, y, actor.transform.localPosition.z);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void moveZ(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        IncrementProgress(modifier);
 
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-
-        }
-
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         float z = Mathf.LerpUnclamped(modifier.originalVal, modifier.finalVal, perc);
         actor.transform.localPosition = new Vector3(actor.transform.localPosition.x, actor.transform.localPosition.y, z);
 
-
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
-    }   
+        CheckDuration(modifier);
+    }
 
     public void rotateX(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         float val = Mathf.LerpUnclamped(modifier.originalVal, modifier.finalVal, perc);
 
         actor.transform.localRotation = Quaternion.Euler(val, actor.transform.localRotation.eulerAngles.y, actor.transform.localRotation.eulerAngles.z);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void rotateY(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         float val = Mathf.LerpUnclamped(modifier.originalVal, modifier.finalVal, perc);
 
         actor.transform.localRotation = Quaternion.Euler(actor.transform.localRotation.eulerAngles.x, val, actor.transform.localRotation.eulerAngles.z);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void rotateZ(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        IncrementProgress(modifier);
 
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         float val = Mathf.LerpUnclamped(modifier.originalVal, modifier.finalVal, perc);
 
         actor.transform.localRotation = Quaternion.Euler(actor.transform.localRotation.eulerAngles.x, actor.transform.localRotation.eulerAngles.y, val);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void scale(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
+        IncrementProgress(modifier);
 
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
         actor.transform.localScale = Vector3.LerpUnclamped(modifier.originalScl, modifier.finalScl, perc);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void scaleX(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
         float perc = modifier.progress / modifier.duration;
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         actor.transform.localScale = new Vector3(Mathf.LerpUnclamped(modifier.originalScl.x, modifier.finalScl.x, perc), actor.transform.localScale.y, actor.transform.localScale.z);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void scaleY(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
+        IncrementProgress(modifier);
 
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         actor.transform.localScale = new Vector3(actor.transform.localScale.x, Mathf.LerpUnclamped(modifier.originalScl.y, modifier.finalScl.y, perc), actor.transform.localScale.z);
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void scaleZ(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         actor.transform.localScale = new Vector3(actor.transform.localScale.x, actor.transform.localScale.y, Mathf.LerpUnclamped(modifier.originalScl.z, modifier.finalScl.z, perc));
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void playAnimation(Mods modifier, Animator anim)
@@ -648,44 +322,15 @@ public class ModChart : UdonSharpBehaviour
     }
     public void setAnimFloat(Mods modifier, Animator anim)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
+        IncrementProgress(modifier);
 
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         anim.SetFloat(modifier.param, Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc));
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void playParticles(Mods modifier, ParticleSystem ps)
@@ -695,21 +340,17 @@ public class ModChart : UdonSharpBehaviour
         modifier.progress = modifier.duration;
         modifier.iteration++;
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
+        CheckDuration(modifier, false);
+    }
 
-            }
-            else
-            {
-                modifier.playing = false;
-            }
+    public void stopParticles(Mods modifier, ParticleSystem ps)
+    {
+        ps.Stop();
 
-        }
+        modifier.progress = modifier.duration;
+        modifier.iteration++;
 
+        CheckDuration(modifier, false);
     }
 
     public void toggleObject(Mods modifier, GameObject actor)
@@ -719,20 +360,7 @@ public class ModChart : UdonSharpBehaviour
         modifier.progress = modifier.duration;
         modifier.iteration++;
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier, false);
     }
     public void togglePlayfield(Mods modifier, Playfield pf)
     {
@@ -741,26 +369,13 @@ public class ModChart : UdonSharpBehaviour
         modifier.progress = modifier.duration;
         modifier.iteration++;
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier, false);
     }
 
     //TODO: Find a way to make this mod work
-    public void rotateAround(Mods modifier, GameObject actor) 
+    public void rotateAround(Mods modifier, GameObject actor)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        modifier.progress += Time.deltaTime * modifier.bpmMult;
         if (modifier.progress > modifier.duration)
         {
             modifier.iteration++;
@@ -768,7 +383,7 @@ public class ModChart : UdonSharpBehaviour
             if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
             {
                 modifier.progress = 0;
-                modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+                modifier.progress += Time.deltaTime * modifier.bpmMult;
                 modifier.playing = true;
             }
             else
@@ -777,17 +392,9 @@ public class ModChart : UdonSharpBehaviour
             }
         }
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         actor.transform.localPosition = Vector3.SlerpUnclamped(modifier.currentPos, modifier.finalTrans.localPosition, perc);
         actor.transform.localRotation = Quaternion.SlerpUnclamped(modifier.originalRot, modifier.finalTrans.localRotation, perc);
@@ -795,326 +402,131 @@ public class ModChart : UdonSharpBehaviour
 
     public void pathType(Mods modifier, Playfield pf)
     {
-        switch(modifier.function)
+        switch (modifier.function)
         {
             case "pathTypeX":
-                pf.arrowPathX = modifier.param;
+                pf.arrowPath[0] = modifier.ease;
                 break;
             case "pathTypeY":
-                pf.arrowPathY = modifier.param;
+                pf.arrowPath[1] = modifier.ease;
                 break;
             case "pathTypeZ":
-                pf.arrowPathZ = modifier.param;
+                pf.arrowPath[2] = modifier.ease;
                 break;
         }
 
         modifier.progress = modifier.duration;
         modifier.iteration++;
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
-
+        CheckDuration(modifier, false);
     }
     public void pathMagnitude(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         switch (modifier.function)
         {
             case "pathMagX":
-                pf.pathMagnitudeX = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
+                pf.pathMagnitude.x = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
             case "pathMagY":
-                pf.pathMagnitudeY = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
+                pf.pathMagnitude.y = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
             case "pathMagZ":
-                pf.pathMagnitudeZ = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
+                pf.pathMagnitude.z = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
         }
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void pathFrequency(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         switch (modifier.function)
         {
             case "pathFreqX":
-                pf.pathFrequencyX = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
+                pf.pathFrequency.x = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
             case "pathFreqY":
-                pf.pathFrequencyY = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
+                pf.pathFrequency.y = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
             case "pathFreqZ":
-                pf.pathFrequencyZ = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
+                pf.pathFrequency.z = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
         }
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void dark(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.dark = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetDark();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void stealth(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.stealth = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetStealth();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void explode(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.explode = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetExplode();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void whiteout(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.whiteOut = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetWhiteOut();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void arrowRotation(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         switch (modifier.function)
         {
@@ -1131,43 +543,15 @@ public class ModChart : UdonSharpBehaviour
 
         pf.SetArrowRotations();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void arrowSize(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         switch (modifier.function)
         {
@@ -1184,28 +568,13 @@ public class ModChart : UdonSharpBehaviour
 
         pf.SetArrowSize();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     //TODO: Find a way to make these mods work
     public void invert(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        modifier.progress += Time.deltaTime * modifier.bpmMult;
         if (modifier.progress > modifier.duration)
         {
             modifier.iteration++;
@@ -1213,7 +582,7 @@ public class ModChart : UdonSharpBehaviour
             if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency && modifier.progress == modifier.duration)
             {
                 modifier.progress = 0;
-                modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+                modifier.progress += Time.deltaTime * modifier.bpmMult;
                 modifier.playing = true;
             }
             else
@@ -1222,24 +591,16 @@ public class ModChart : UdonSharpBehaviour
             }
         }
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.invert = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetInvert();
     }
     public void flip(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        modifier.progress += Time.deltaTime * modifier.bpmMult;
         if (modifier.progress > modifier.duration)
         {
             modifier.iteration++;
@@ -1247,7 +608,7 @@ public class ModChart : UdonSharpBehaviour
             if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency && modifier.progress == modifier.duration)
             {
                 modifier.progress = 0;
-                modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+                modifier.progress += Time.deltaTime * modifier.bpmMult;
                 modifier.playing = true;
             }
             else
@@ -1256,24 +617,16 @@ public class ModChart : UdonSharpBehaviour
             }
         }
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.flip = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetFlip();
     }
     public void reverse(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+        modifier.progress += Time.deltaTime * modifier.bpmMult;
         if (modifier.progress > modifier.duration)
         {
             modifier.iteration++;
@@ -1281,7 +634,7 @@ public class ModChart : UdonSharpBehaviour
             if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency && modifier.progress == modifier.duration)
             {
                 modifier.progress = 0;
-                modifier.progress += (Time.deltaTime * song.bpm) / 60f;
+                modifier.progress += Time.deltaTime * modifier.bpmMult;
                 modifier.playing = true;
             }
             else
@@ -1290,17 +643,9 @@ public class ModChart : UdonSharpBehaviour
             }
         }
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.reverse = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetReverse();
@@ -1308,24 +653,11 @@ public class ModChart : UdonSharpBehaviour
 
     public void fadeStart(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         switch (modifier.function)
         {
@@ -1343,43 +675,15 @@ public class ModChart : UdonSharpBehaviour
                 break;
         }
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
     public void fadeEnd(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         switch (modifier.function)
         {
@@ -1397,64 +701,21 @@ public class ModChart : UdonSharpBehaviour
                 break;
         }
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     public void fadeEdge(Mods modifier, Playfield pf)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
-        }
+        IncrementProgress(modifier);
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
 
         pf.fadeEdge = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
         pf.SetFadeWidth();
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier);
     }
 
     /// TEST OTHER SONGS CUZ OH GOD THIS IS SCARY TO MESS WITH. No really I am afraid this could EASILY break some stuff
@@ -1465,89 +726,50 @@ public class ModChart : UdonSharpBehaviour
         modifier.progress = modifier.duration;
         modifier.iteration++;
 
-        if (modifier.progress == modifier.duration)
-        {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
-        }
+        CheckDuration(modifier, false);
     }
-    
-    /// THIS HAS YET TO BE TESTED OH CRAP
+
+
     public void xmod(Mods modifier)
     {
-        modifier.progress += (Time.deltaTime * song.bpm) / 60f;
-        if (modifier.progress > modifier.duration)
-        {
-            modifier.iteration++;
-            modifier.progress = modifier.duration;
+        IncrementProgress(modifier);
 
-        }
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
 
-        float perc = 0;
-        if (modifier.duration != 0)
-        {
-            perc = modifier.progress / modifier.duration;
-        }
-        else
-        {
-            perc = 1;
-        }
-
-        perc = ApplySmoothing(perc, modifier.motion, modifier.flipMotion, modifier.motionFreq);
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
         song.xmod = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
 
-        if (modifier.progress == modifier.duration)
+        CheckDuration(modifier);
+    }
+
+    public void InitializeBPMMult(float bpmMult)
+    {
+        for (int i = 0; i < mods.Length; i++)
         {
-            if (modifier.iteration < modifier.repetitions && modifier.duration == modifier.frequency)
-            {
-                modifier.progress = 0;
-                modifier.playing = true;
-
-                if (modifier.addValues)
-                    modifier.RecalculateValues();
-            }
-            else
-            {
-                modifier.playing = false;
-            }
-
+            mods[i].InitializeBPMMult(bpmMult);
         }
     }
 
-    public void CheckUpdate()
+    public void Update()
     {
-        if(song == null) { return; }
+        if (song == null) { return; }
         if (!song.songPlaying) { return; }
 
-        for(int i = 0; i < mods.Length; i++)
+        /*for (int i = 0; i < mods.Length; i++) // This alone takes 5ms to run
         {
             mods[i].CheckUpdates();
-        }
+        }*/
 
-        if (lastModPlayed <= modsChart.Length - 1 )
+        if (lastModPlayed < modsChart.Length) // we still have mods to load
         {
-
-            if (lastModPlayed > modsChart.Length)
-            {
-                Debug.Log("Last mod loaded 2"); //Don't know why I have this
-                lastModPlayed++;
-            }
-
-            if (lastSongBeat > (float)modsChart[lastModPlayed][0])
+            //Delay from running on another script
+            if (lastSongBeat + (song.beatsPerSecond * 0.01f) > (float)modsChart[lastModPlayed][0])
             {
                 for (int i = 0; i <= modsChart.Length; i++)
                 {
                     if (lastModPlayed + i > modsChart.Length - 1)
                     {
-                        Debug.Log("Last mod loaded 1"); 
+                        Debug.Log("Last mod loaded 1");
                         lastModPlayed += i;
                         break;
                     }
@@ -1589,90 +811,93 @@ public class ModChart : UdonSharpBehaviour
     public void LoadMod(Mods mod, int index)
     {
         mod.mods = this;
-        if(modsChart[index][0].GetType() !=  typeof(float)) { Debug.LogError($"MOD ERROR: 'beat' at {modsChart[index][0]} on mod {index} is not a float!"); }
-        mod.beat = (float)modsChart[index][0];
-        if (modsChart[index][1].GetType() != typeof(float)) { Debug.LogError($"MOD ERROR: 'duration' at {modsChart[index][0]} on mod {index} is not a float!"); }
-        mod.duration = (float)modsChart[index][1];
-        mod.function = (string)modsChart[index][2];
+
+        object[] modData = modsChart[index];
+
+        if (modData[0].GetType() != typeof(float)) { Debug.LogError($"MOD ERROR: 'beat' at {modData[0]} on mod {index} is not a float!"); }
+        mod.beat = (float)modData[0];
+        if (modData[1].GetType() != typeof(float)) { Debug.LogError($"MOD ERROR: 'duration' at {modData[0]} on mod {index} is not a float!"); }
+        mod.duration = (float)modData[1];
+        mod.function = (string)modData[2];
         mod.magnitude = 0f;
-        
-        if(mod.beat < lastModBeat) { Debug.LogError($"MOD ERROR: Last mod beat was {lastModBeat} and next mod {mod.function} beat is {mod.beat} !"); }
+
+        if (mod.beat < lastModBeat) { Debug.LogError($"MOD ERROR: Last mod beat was {lastModBeat} and next mod {mod.function} beat is {mod.beat} !"); }
         else { lastModBeat = mod.beat; }
- 
 
-        if (modsChart[index][3].GetType() == typeof(float) || modsChart[index][3].GetType() == typeof(int))
+
+        if (modData[3].GetType() == typeof(float) || modData[3].GetType() == typeof(int))
         {
-            if(modsChart[index][3].GetType() != typeof(float)) { Debug.LogWarning($"MOD WARNING: 'magnitude' at {modsChart[index][0]} on mod {index} is not a float! This can cause bugs in your modchart."); }
-            mod.magnitude = (float)modsChart[index][3];
-            if (mod.function != "setBPM") //Special edge case for set bpm... because ofc
-            {          
-                mod.smoothing = (string)modsChart[index][4];
-                mod.actor = (GameObject)modsChart[index][5];
+            if (modData[3].GetType() != typeof(float)) { Debug.LogWarning($"MOD WARNING: 'magnitude' at {modData[0]} on mod {index} is not a float! This can cause bugs in your modchart."); }
+            mod.magnitude = (float)modData[3];
 
-                if (modsChart[index].Length >= 7)
+            mod.smoothing = (string)modData[4];
+            if (mod.function != "xmod")
+            {
+                mod.actor = (GameObject)modData[5];
+
+                if (modData.Length >= 7)
                 {
-                    if (modsChart[index][6].GetType() == typeof(GameObject))
+                    if (modData[6].GetType() == typeof(GameObject))
                     {
-                        mod.objectReference = (GameObject)modsChart[index][6];
+                        mod.objectReference = (GameObject)modData[6];
                         mod.pointVector = mod.objectReference.transform.position;
                     }
-                    else if (modsChart[index][6].GetType() == typeof(Vector3))
+                    else if (modData[6].GetType() == typeof(Vector3))
                     {
-                        mod.pointVector = (Vector3)modsChart[index][6];
+                        mod.pointVector = (Vector3)modData[6];
                     }
-                    else if (modsChart[index][6].GetType() == typeof(string)) //SetFloat cuz its a string
+                    else if (modData[6].GetType() == typeof(string)) //SetFloat cuz its a string
                     {
-                        mod.param = (string)modsChart[index][6];
+                        mod.param = (string)modData[6];
                     }
                 }
+
             }
         }
-        else if (modsChart[index][3].GetType() == typeof(GameObject))
+        else if (modData[3].GetType() == typeof(GameObject))
         {
             //Actor OR ParticleSystem
-            mod.actor = (GameObject)modsChart[index][3];
+            mod.actor = (GameObject)modData[3];
         }
         else //String
         {
             //PathType OR AnimationState
-            mod.param = (string)modsChart[index][3];
+            mod.param = (string)modData[3];
 
-            if (modsChart[index][4].GetType() == typeof(GameObject))
+            if (modData[4].GetType() == typeof(GameObject))
             {
-                mod.actor = (GameObject)modsChart[index][4];
+                mod.actor = (GameObject)modData[4];
 
-                if (modsChart[index].Length >= 6)
+                if (modData.Length >= 6)
                 {
-                    if (modsChart[index][5].GetType() == typeof(string)) //If they don't include speed parameter  
+                    if (modData[5].GetType() == typeof(string)) //If they don't include speed parameter  
                     {
-                        mod.smoothing = (string)modsChart[index][5];
+                        mod.smoothing = (string)modData[5];
                     }
                     else
                     {
-                        mod.smoothing = "";
+                        mod.smoothing = string.Empty;
                     }
                 }
                 else
                 {
-                    {
-                        mod.smoothing = "";
-                    }
+                    mod.smoothing = string.Empty;
                 }
             }
         }
 
         //Check for repetitions!
-        if (modsChart[index][modsChart[index].Length - 1].GetType() == typeof(float) && modsChart[index][modsChart[index].Length - 2].GetType() == typeof(int))
+        if (modData[modData.Length - 1].GetType() == typeof(float) && modData[modData.Length - 2].GetType() == typeof(int))
         {
-            mod.repetitions = (int)modsChart[index][modsChart[index].Length - 2];
-            mod.frequency = (float)modsChart[index][modsChart[index].Length - 1];
+            mod.repetitions = (int)modData[modData.Length - 2];
+            mod.frequency = (float)modData[modData.Length - 1];
             mod.addValues = false;
         }
-        else if (modsChart[index][modsChart[index].Length - 1].GetType() == typeof(bool))
+        else if (modData[modData.Length - 1].GetType() == typeof(bool))
         {
-            mod.repetitions = (int)modsChart[index][modsChart[index].Length - 3];
-            mod.frequency = (float)modsChart[index][modsChart[index].Length - 2];
-            mod.addValues = (bool)modsChart[index][modsChart[index].Length - 1];
+            mod.repetitions = (int)modData[modData.Length - 3];
+            mod.frequency = (float)modData[modData.Length - 2];
+            mod.addValues = (bool)modData[modData.Length - 1];
         }
         else
         {
@@ -1682,146 +907,10 @@ public class ModChart : UdonSharpBehaviour
         }
     }
 
-    public float ApplySmoothing(float t, string type, bool flip, float mag)
+    public float ApplySmoothing(float t, int type, bool flip, float mag)
     {
-
-        switch (type)
-        {
-            case "Linear":
-                break;
-            case "Float":
-                t = Mathf.Sin(Mathf.PI * t * 2 * mag);
-                break;          
-            case "Bounce": //Sine-like bounce, smoother
-                t = Mathf.Sin(Mathf.PI * t);
-                break; 
-            case "BounceV2": //Sharper bounce
-                t = (-t * Mathf.Exp(1) * 1.457f * (t - 1));
-                break;
-            case "Pull": //Sustained bounce? Similar to Bell from Mirin's eases
-                t = t < 0.5
-                ? (Mathf.Pow(2*t-1,3) + 1)
-                : (-Mathf.Pow(2 * t - 1, 3) + 1);
-                break;
-
-            case "WhipOut": //Progressively whips the object, starts at 0 and ends at 1
-                t = t * Mathf.Cos(Mathf.PI * (t - 1) * mag);
-                break;
-            case "WhipIn": //Use .5 values on mag to start at 0 with strong motions and end at 0 with weaker motions. Use whole values too start at -1 or 1 and end at 0
-                t = (1 - t) * Mathf.Cos(Mathf.PI * (t - 1) * mag);
-                break;
-            case "WhipInOut": //Any values work on mag work, it progressive shakes more and then slows down, starts at 0 ends at 0
-                t = (1 - t) * Mathf.Cos(Mathf.PI * t * mag) * t * 4;
-                break;
-
-            case "EaseOvershoot": //Always use even and half numbers to ensure proper behaviour (2.5, 4.5, 6,5...etc) on mag. The starting value is (should) be 0 and the end value is 1.
-                t = (1 - t) * Mathf.Sin(Mathf.PI * (t - 1) * mag) + 1;
-                break;
-
-            case "InstantIn": //The starting value is 1 and the end is 0. Deprecated, we can use a flipped EaseOut...
-                t = Mathf.Cos((Mathf.PI * t) / 2); 
-                break;
-            case "EaseOut":
-                t = 1 - Mathf.Cos((t * Mathf.PI) / 2);
-                break;
-            case "EaseIn":
-                t = Mathf.Sin(t * Mathf.PI * 0.5f);
-                break;
-            case "EaseInOut":
-                t = -(Mathf.Cos(Mathf.PI * t) - 1) / 2;
-                break;
-
-            case "EaseInCirc":
-                t = 1 - Mathf.Sqrt(1 - Mathf.Pow(t, 2));
-                break;
-            case "EaseOutCirc":
-                t = Mathf.Sqrt(1 - Mathf.Pow(t - 1, 2));
-                break;
-            case "EaseInOutCirc":
-                t = t < 0.5
-                ? (1 - Mathf.Sqrt(1 - Mathf.Pow(2 * t, 2))) / 2
-                : (Mathf.Sqrt(1 - Mathf.Pow(-2 * t + 2, 2)) + 1) / 2;
-                break;
-
-            case "EaseInQuad":
-                t = t * t;
-                break;
-            case "EaseOutQuad":
-                t = 1 - (1 - t) * (1 - t);
-                break;
-            case "EaseInOutQuad":
-                t = t < 0.5 ? 2 * t * t : 1 - Mathf.Pow(-2 * t + 2, 2) / 2;
-                break;
-
-            case "EaseInExpo":
-                t = t == 0 ? 0 : Mathf.Pow(2, 10 * t - 10);
-                break;
-            case "EaseOutExpo":
-                t = t == 1 ? 1 : 1 - Mathf.Pow(2, -10 * t);
-                break;
-            case "EaseInOutExpo":
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : t < 0.5 ? Mathf.Pow(2, 20 * t - 10) / 2
-                  : (2 - Mathf.Pow(2, -20 * t + 10)) / 2;
-                break;
-
-            case "EaseInBack":
-                t = 2.70158f * t * t * t - 1.70158f * t * t;
-                break;
-            case "EaseOutBack":
-                t = 1 + 2.70158f * Mathf.Pow(t - 1, 3) + 1.70158f * Mathf.Pow(t - 1, 2);
-                break;
-            case "EaseInOutBack":
-                float c1 = 1.70158f;
-                float c2 = c1 * 1.525f;
-
-                t = t < 0.5
-                  ? (Mathf.Pow(2 * t, 2) * ((c2 + 1) * 2 * t - c2)) / 2
-                  : (Mathf.Pow(2 * t - 2, 2) * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2;
-                break;
-
-                //TODO: Implement magnitude that can affect the amount of bounce for these functions
-            case "EaseInElastic":
-                float c5 = (2 * Mathf.PI) / 3;
-
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : -Mathf.Pow(2, 10 * t - 10) * Mathf.Sin((t * 10 - 10.75f) * c5);
-                break;
-            case "EaseOutElastic":
-                float c6 = (2 * Mathf.PI) / 3;
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : Mathf.Pow(2, -10 * t) * Mathf.Sin((t * 10 - 0.75f) * c6) + 1;
-                break;
-            case "EaseInOutElastic":
-                float c7 = (2f * Mathf.PI) / 4.5f;
-                t = t == 0
-                  ? 0
-                  : t == 1
-                  ? 1
-                  : t < 0.5
-                  ? -(Mathf.Pow(2, 20 * t - 10) * Mathf.Sin((20 * t - 11.125f) * c7)) / 2
-                  : (Mathf.Pow(2, -20 * t + 10) * Mathf.Sin((20 * t - 11.125f) * c7)) / 2 + 1;
-                break;
-
-            case "Inverse":
-                t = Mathf.Tan(t * Mathf.PI) / 10f;
-                break;
-            default:
-                Debug.Log("Motion function wasn't found " + type);
-                break;
-        }
-
-        return flip ? (1 - t) : t;
-
+        float ease = EasingFunctions.Ease(type, t, mag);
+        return flip ? (1 - ease) : ease;
     }
 
     public Mods GetMod()
@@ -1829,7 +918,7 @@ public class ModChart : UdonSharpBehaviour
         if (indexLocation >= mods.Length - 1)
         {
             indexLocation = 1;
-            if(mods[indexLocation - 1].repetitions == mods[indexLocation - 1].iteration && !mods[indexLocation -1].playing) //If the mod is on the same iteration and it is done playing, return that
+            if (mods[indexLocation - 1].repetitions == mods[indexLocation - 1].iteration && !mods[indexLocation - 1].playing) //If the mod is on the same iteration and it is done playing, return that
             {
                 //Mod 0 is ready to use, dont do anything
             }
@@ -1848,13 +937,13 @@ public class ModChart : UdonSharpBehaviour
         }
         else
         {
-            if(mods[indexLocation].repetitions == mods[indexLocation].iteration && !mods[indexLocation].playing) //If the mod is done playing, send over that mod
+            if (mods[indexLocation].repetitions == mods[indexLocation].iteration && !mods[indexLocation].playing) //If the mod is done playing, send over that mod
             {
                 indexLocation++;
             }
             else //Mod not done playing, get the next one
             {
-               // Debug.Log("Last mod was busy. Looking for mods IL : " + indexLocation);
+                // Debug.Log("Last mod was busy. Looking for mods IL : " + indexLocation);
 
                 for (int i = indexLocation + 1; i < mods.Length; i++)
                 {
@@ -1876,7 +965,7 @@ public class ModChart : UdonSharpBehaviour
         lastModPlayed = 0;
         lastSongBeat = 0;
         indexLocation = 0;
-        lastModBeat = 0;
+        lastModBeat = -9999;
 
         P1.ResetPlayfield();
         P2.ResetPlayfield();
@@ -1923,7 +1012,7 @@ public class ModChart : UdonSharpBehaviour
 
         Lights.SetActive(true);
 
-        foreach(Mods m in mods) //Stop any mods that are playing!   
+        foreach (Mods m in mods) //Stop any mods that are playing!   
         {
             m.Restore();
         }
