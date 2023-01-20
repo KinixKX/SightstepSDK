@@ -33,254 +33,699 @@ public class CybersWorldMods : ModChart
 
         xmodS = 3.5f;
         simpleModChart = new object[][]
-        {
-            new object[]{0f, 1f, "toggleObject", backgroundAnimations },
+ {
 
-            new object[]{0f, 1f, "toggleObject", Lights },
-            new object[]{0f, 1f, "toggleObject", lightAnimations },
-
-            new object[]{ 0f, .5f, "moveY", 2f, "Bounce", P1.ReceptorL},
-            new object[]{0.5f, 1f, "playAnimation", "BlackFadeIn", backgroundAnimations},
-            new object[]{ 0.5f, .5f, "moveY", 2f, "Bounce", P1.ReceptorD},
-            new object[]{ 1f, .5f, "moveY", 2f, "Bounce", P1.ReceptorU},
-            new object[]{ 1.5f, .5f, "moveY", 2f, "Bounce", P1.ReceptorR},
-            new object[]{ 2f, 1f, "rotateZ", 45f, "Float", P1.ReceptorL},
-            new object[]{ 2f, 1f, "rotateZ", 45f, "Float", P1.ReceptorD },
-            new object[]{ 2f, 1f, "rotateZ", 45f, "Float", P1.ReceptorU },
-            new object[]{ 2f, 1f, "rotateZ", 45f, "Float", P1.ReceptorR },
-
-            new object[]{2f, 1f, "toggleObject", BG },
-
-            new object[]{21f, .4f, "moveX", -1.5f, "Flip:EaseOutQuad", P1.receptors, 3, 1f},
-            new object[]{21f, .4f, "moveX", 1.5f, "Flip:EaseOutQuad", P1.spawners, 3, 1f},
-            new object[]{21f, .4f, "rotateZ", 30f, "Flip:EaseOut", P1.ReceptorL, 3, 1f},
-            new object[]{21f, .4f, "rotateZ", 30f, "Flip:EaseOut", P1.ReceptorD, 3, 1f},
-            new object[]{21f, .4f, "rotateZ", 30f, "Flip:EaseOut", P1.ReceptorU, 3, 1f},
-            new object[]{21f, .4f, "rotateZ", 30f, "Flip:EaseOut", P1.ReceptorR, 3, 1f},
-
-            new object[]{21.5f, .4f, "moveX", 1.5f, "Flip:EaseOutQuad", P1.receptors, 2, 1f},
-            new object[]{21.5f, .4f, "moveX", -1.5f, "Flip:EaseOutQuad", P1.spawners, 2, 1f},
-            new object[]{21.5f, .4f, "rotateZ", -30f, "Flip:EaseOut", P1.ReceptorL, 2, 1f},
-            new object[]{21.5f, .4f, "rotateZ", -30f, "Flip:EaseOut", P1.ReceptorD, 2, 1f},
-            new object[]{21.5f, .4f, "rotateZ", -30f, "Flip:EaseOut", P1.ReceptorU, 2, 1f},
-            new object[]{21.5f, .4f, "rotateZ", -30f, "Flip:EaseOut", P1.ReceptorR, 2, 1f},
-
-            new object[]{32f, 0f, "setrotateZ", 0f, "EaseIn", P1.ReceptorL},
-            new object[]{32f, 0f, "setrotateZ", 0f, "EaseIn", P1.ReceptorD},
-            new object[]{32f, 0f, "setrotateZ", 0f, "EaseIn", P1.ReceptorU},
-            new object[]{32f, 0f, "setrotateZ", 0f, "EaseIn", P1.ReceptorR},
-
-            new object[]{32f, 0f, "setmoveX", P1._defaultReceptorL.x , "EaseIn", P1.ReceptorL},
-            new object[]{32f, 0f, "setmoveX", P1._defaultReceptorD.x, "EaseIn", P1.ReceptorD},
-            new object[]{32f, 0f, "setmoveX", P1._defaultReceptorU.x, "EaseIn", P1.ReceptorU},
-            new object[]{32f, 0f, "setmoveX", P1._defaultReceptorR.x, "EaseIn", P1.ReceptorR},
-
-             new object[]{36f, 0f, "togglePlayfield", P2.gameObject},
-            new object[]{36f, 1f, "moveZ", 1f, "Bounce", P1.gameObject },
-            new object[]{36f, 1f, "rotateZ", 25f, "BounceV2", P1.gameObject},
-            new object[]{36f, 1f, "stealth", .8f, "BounceV2", P2.gameObject },
+            new object[]{0f, 0f, "dark", 1f,"Linear", P1.gameObject },
 
 
-            //new object[]{ 3.5f, .5f, "scale", 1.5f, "Float", P1.ReceptorL },
-            //new object[]{ 3.5f, .5f, "scale", 1.5f, "Float", P1.ReceptorD },
-            //new object[]{ 3.5f, .5f, "scale", 1.5f, "Float", P1.ReceptorU },
-            //new object[]{ 3.5f, .5f, "scale", 1.5f, "Float", P1.ReceptorR },
-            //new object[]{ 4f, .45f, "moveX", -1.5f, "EaseInCirc", P1.ReceptorL },
-            //new object[]{ 4.5f, .45f, "moveX", -0.5f, "EaseInCirc", P1.ReceptorD },
-            //new object[]{ 5f, .45f, "moveX", 0.5f, "EaseInCirc", P1.ReceptorU },
-            //new object[]{ 5.5f, .45f, "moveX", 1.5f, "EaseInCirc", P1.ReceptorR },
-            //new object[]{ 6f, 1f, "moveZ", -2f, "Float", P1.ReceptorL },
-            //new object[]{ 6f, 1f, "moveZ", 2f, "Float", P1.ReceptorD },
-            //new object[]{ 6f, 1f, "moveZ", 2f, "Float", P1.ReceptorU },
-            //new object[]{ 6f, 1f, "moveZ", -2f, "Float", P1.ReceptorR },
+            new object[]{1f, 23f, "dark", 0f,"Linear", P1.gameObject },
+            new object[]{1f, 23f, "moveZ", -4f,"InstantIn", P1.gameObject },
 
-            //new object[]{ 7.5f, .5f, "moveX", 1.5f, "EaseInOutElastic", P1.ReceptorL },
-            //new object[]{ 7.5f, .5f, "moveX", 0.5f, "EaseInOutElastic", P1.ReceptorD },
-            //new object[]{ 7.5f, .5f, "moveX", -0.5f, "EaseInOutElastic", P1.ReceptorU },
-            //new object[]{ 7.5f, .5f, "moveX", -1.5f, "EaseInOutElastic", P1.ReceptorR },
+            new object[]{1f, 23f, "moveY", -2f, "WhipIn,11", P1.ReceptorL},
+            new object[]{1f, 23f, "moveX", 1.5f, "WhipIn,6", P1.ReceptorL},
+
+            new object[]{1f, 23f, "moveY", 2.5f, "WhipIn,5", P1.ReceptorD},
+            new object[]{1f, 23f, "moveX", 2f, "WhipIn,10", P1.ReceptorD},
+
+            new object[]{1f, 23f, "moveY", -1.5f, "WhipIn,8" , P1.ReceptorU},
+            new object[]{1f, 23f, "moveX", -2f, "WhipIn,6", P1.ReceptorU},
+
+            new object[]{1f, 23f, "moveY", 1.5f, "WhipIn,9", P1.ReceptorR},
+            new object[]{1f, 23f, "moveX", -2.5f, "WhipIn,10", P1.ReceptorR},
+
+            new object[]{24f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorL},
+            new object[]{24f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorD },
+            new object[]{24f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorU},
+            new object[]{24f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorR },
+
+            new object[]{24f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnL},
+            new object[]{24f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnD },
+            new object[]{24f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnU},
+            new object[]{24f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnR },
+
+            new object[]{26f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorL},
+            new object[]{26f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorD },
+            new object[]{26f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorU},
+            new object[]{26f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorR },
+
+            new object[]{26f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnL},
+            new object[]{26f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnD },
+            new object[]{26f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnU},
+            new object[]{26f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnR },
+
+            new object[]{27f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorL},
+            new object[]{27f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorD },
+            new object[]{27f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorU},
+            new object[]{27f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorR },
+
+            new object[]{27f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnL},
+            new object[]{27f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnD },
+            new object[]{27f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnU},
+            new object[]{27f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnR },
+
+            new object[]{29.5f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorL},
+            new object[]{29.5f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorD },
+            new object[]{29.5f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorU},
+            new object[]{29.5f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorR },
+
+            new object[]{29.5f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnL},
+            new object[]{29.5f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnD },
+            new object[]{29.5f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnU},
+            new object[]{29.5f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnR },
+
+            new object[]{30f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorL},
+            new object[]{30f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorD },
+            new object[]{30f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorU},
+            new object[]{30f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorR },
+
+            new object[]{30f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnL},
+            new object[]{30f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnD },
+            new object[]{30f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnU},
+            new object[]{30f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnR },
+
+            new object[]{31f, .25f, "moveX", receptor_distance, "Linear", P1.ReceptorD, 2, 1f},
+            new object[]{31f, .25f, "moveX", receptor_distance, "Linear", P1.spawnD, 2, 1f },
+            new object[]{31f, .25f, "moveX", -receptor_distance, "Linear", P1.ReceptorU, 2, 1f},
+            new object[]{31f, .25f, "moveX", -receptor_distance, "Linear", P1.spawnU, 2, 1f },
+
+            new object[]{31.5f, .25f, "moveX", -receptor_distance, "Linear", P1.ReceptorD, 2, 1f},
+            new object[]{31.5f, .25f, "moveX", -receptor_distance, "Linear", P1.spawnD, 2, 1f },
+            new object[]{31.5f, .25f, "moveX", receptor_distance, "Linear", P1.ReceptorU, 2, 1f},
+            new object[]{31.5f, .25f, "moveX", receptor_distance, "Linear", P1.spawnU, 2, 1f },
+
+            new object[]{33f, 2.5f, "moveY", -.7f, "Flip:EaseOvershoot,6.5", P1.ReceptorL},
+            new object[]{33f, 2.5f, "moveY", .7f, "Flip:EaseOvershoot,6.5", P1.ReceptorD },
+            new object[]{33f, 2.5f, "moveY", -.7f, "Flip:EaseOvershoot,6.5", P1.ReceptorU},
+            new object[]{33f, 2.5f, "moveY", .7f, "Flip:EaseOvershoot,6.5", P1.ReceptorR },
+
+            new object[]{33f, 2.5f, "moveY", .7f, "Flip:EaseOvershoot,6.5", P1.spawnL},
+            new object[]{33f, 2.5f, "moveY", -.7f, "Flip:EaseOvershoot,6.5", P1.spawnD },
+            new object[]{33f, 2.5f, "moveY", .7f, "Flip:EaseOvershoot,6.5", P1.spawnU},
+            new object[]{33f, 2.5f, "moveY", -.7f, "Flip:EaseOvershoot,6.5", P1.spawnR },
+
+            new object[]{36f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorL},
+            new object[]{36f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorD },
+            new object[]{36f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorU},
+            new object[]{36f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorR },
+
+            new object[]{36f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnL},
+            new object[]{36f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnD },
+            new object[]{36f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnU},
+            new object[]{36f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnR },
+
+            new object[]{38f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorL},
+            new object[]{38f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorD },
+            new object[]{38f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorU},
+            new object[]{38f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorR },
+
+            new object[]{38f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnL},
+            new object[]{38f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnD },
+            new object[]{38f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnU},
+            new object[]{38f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnR },
+
+            new object[]{39f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorL},
+            new object[]{39f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorD },
+            new object[]{39f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.ReceptorU},
+            new object[]{39f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.ReceptorR },
+
+            new object[]{39f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnL},
+            new object[]{39f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnD },
+            new object[]{39f, 1.5f, "moveY", -.4f, "Flip:EaseOvershoot,4.5", P1.spawnU},
+            new object[]{39f, 1.5f, "moveY", .4f, "Flip:EaseOvershoot,4.5", P1.spawnR },
+
+            new object[]{41f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorL},
+            new object[]{41f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorD },
+            new object[]{41f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorU},
+            new object[]{41f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorR },
+
+            new object[]{41f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnL},
+            new object[]{41f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnD },
+            new object[]{41f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnU},
+            new object[]{41f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnR },
+
+            new object[]{42f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorL},
+            new object[]{42f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorD },
+            new object[]{42f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.ReceptorU},
+            new object[]{42f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.ReceptorR },
+
+            new object[]{42f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnL},
+            new object[]{42f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnD },
+            new object[]{42f, .48f, "moveY", -.25f, "Flip:EaseInOutQuad", P1.spawnU},
+            new object[]{42f, .48f, "moveY", .25f, "Flip:EaseInOutQuad", P1.spawnR },
+
+            new object[]{43f, .24f, "moveX", receptor_distance, "Linear", P1.ReceptorL, 2, 1f},
+            new object[]{43f, .24f, "moveX", receptor_distance, "Linear", P1.spawnL, 2, 1f },
+            new object[]{43f, .24f, "moveX", -receptor_distance, "Linear", P1.ReceptorD, 2, 1f},
+            new object[]{43f, .24f, "moveX", -receptor_distance, "Linear", P1.spawnD, 2, 1f },
+
+            new object[]{43f, .24f, "moveX", receptor_distance, "Linear", P1.ReceptorU, 2, 1f},
+            new object[]{43f, .24f, "moveX", receptor_distance, "Linear", P1.spawnU, 2, 1f },
+            new object[]{43f, .24f, "moveX", -receptor_distance, "Linear", P1.ReceptorR, 2, 1f},
+            new object[]{43f, .24f, "moveX", -receptor_distance, "Linear", P1.spawnR, 2, 1f },
+
+            new object[]{43.5f, .24f, "moveX", -receptor_distance, "Linear", P1.ReceptorL, 2, 1f},
+            new object[]{43.5f, .24f, "moveX", -receptor_distance, "Linear", P1.spawnL, 2, 1f },
+            new object[]{43.5f, .24f, "moveX", receptor_distance, "Linear", P1.ReceptorD, 2, 1f},
+            new object[]{43.5f, .24f, "moveX", receptor_distance, "Linear", P1.spawnD, 2, 1f },
+
+            new object[]{43.5f, .24f, "moveX", -receptor_distance, "Linear", P1.ReceptorU, 2, 1f},
+            new object[]{43.5f, .24f, "moveX", -receptor_distance, "Linear", P1.spawnU, 2, 1f },
+            new object[]{43.5f, .24f, "moveX", receptor_distance, "Linear", P1.ReceptorR, 2, 1f},
+            new object[]{43.5f, .24f, "moveX", receptor_distance, "Linear", P1.spawnR, 2, 1f },
+
+            new object[]{45f, 0f, "togglePlayfield", P2.gameObject},
+
+            new object[]{45f, 2.5f, "moveX", 2f, "EaseOvershoot,4.5", P1.spawners},
+            new object[]{45f, 2.5f, "moveX", -2f, "EaseOvershoot,4.5", P2.spawners},
+
+            new object[]{45f, 2.5f, "moveX", 2f, "EaseOvershoot,4.5", P1.ReceptorL},
+            new object[]{45f, 2.5f, "moveX", -2f, "EaseOvershoot,4.5", P2.ReceptorL},
+            new object[]{45.1f, 2.5f, "moveX", 2f, "EaseOvershoot,4.5", P1.ReceptorD},
+            new object[]{45.1f, 2.5f, "moveX", -2f, "EaseOvershoot,4.5", P2.ReceptorD},
+            new object[]{45.2f, 2.5f, "moveX", 2f, "EaseOvershoot,4.5", P1.ReceptorU},
+            new object[]{45.2f, 2.5f, "moveX", -2f, "EaseOvershoot,4.5", P2.ReceptorU},
+            new object[]{45.3f, 2.5f, "moveX", 2f, "EaseOvershoot,4.5", P1.ReceptorR},
+            new object[]{45.3f, 2.5f, "moveX", -2f, "EaseOvershoot,4.5", P2.ReceptorR},
+
+            #region Spin around, with beat-like mod and a few BounceV2s here and there
+            
+            //Accent at 59 to 60
+
+            new object[]{48f, .25f, "moveX", .35f, "InstantIn",P1.receptors, 11, 2f },
+            new object[]{48f, .25f, "moveX", .35f, "InstantIn",P1.spawners, 11, 2f },
+            new object[]{48f, .25f, "moveX", .35f, "InstantIn",P2.receptors, 11, 2f },
+            new object[]{48f, .25f, "moveX", .35f, "InstantIn",P2.spawners, 11, 2f },
+
+            new object[]{48f, 5.5f, "moveX", -4f, "EaseInOutQuad", P1.gameObject, 2, 11f },
+            new object[]{48f, 5.5f, "moveX", 4f, "EaseInOutQuad", P2.gameObject, 2, 11f },
+            new object[]{48f, 5.5f, "moveZ", -3f, "Bounce", P1.gameObject, 2, 11f },
+            new object[]{48f, 5.5f, "moveZ", 3f, "Bounce", P2.gameObject, 2, 11f },
+            new object[]{48f, 5.5f, "arrowRotationZ", 720f, "BounceV2", P2.gameObject, 2, 11f },
+            new object[]{48f, 5.5f, "stealth", .85f, "BounceV2", P2.gameObject, 2, 11f },
+
+            new object[]{48f, 0f, "pathTypeX", "Float", P1.gameObject },
+            new object[]{48f, 0f, "pathTypeX", "Float", P2.gameObject },
+            new object[]{48f, 0f, "pathFreqX", 2f,"Linear", P1.gameObject },
+            new object[]{48f, 0f, "pathFreqX", 2f,"Linear", P2.gameObject },
+            new object[]{48f, .35f, "pathMagX", .5f, "BounceV2",P1.gameObject, 22, 1f},
+            new object[]{48f, .35f, "pathMagX", .5f, "BounceV2", P2.gameObject, 22, 1f},
+
+            new object[]{49f, .25f, "moveX", -.35f, "InstantIn",P1.receptors, 10, 2f },
+            new object[]{49f, .25f, "moveX", -.35f, "InstantIn",P1.spawners, 10, 2f },
+            new object[]{49f, .25f, "moveX", -.35f, "InstantIn",P2.receptors, 10, 2f },
+            new object[]{49f, .25f, "moveX", -.35f, "InstantIn",P2.spawners, 10, 2f },
+
+            new object[]{49f, 2f, "scaleY", 0.5f, "Float", P1.gameObject, 4, 6f },
+            new object[]{49f, 2f, "scaleY", 0.5f, "Float", P2.gameObject, 4, 6f },
+            new object[]{49f, 2f, "arrowSizeX", 1.5f, "Bounce", P1.gameObject, 4, 6f },
+            new object[]{49f, 2f, "arrowSizeX", 1.5f, "Bounce", P2.gameObject, 4, 6f },
+
+            new object[]{48f + 5.5f, 5.5f, "moveX", 4f, "EaseInOutQuad", P1.gameObject, 2, 11f },
+            new object[]{48f + 5.5f, 5.5f, "moveX", -4f, "EaseInOutQuad", P2.gameObject, 2, 11f },
+            new object[]{48f + 5.5f, 5.5f, "moveZ", 3f, "Bounce", P1.gameObject, 2, 11f },
+            new object[]{48f + 5.5f, 5.5f, "moveZ", -3f, "Bounce", P2.gameObject, 2, 11f },
+            new object[]{48f + 5.5f, 5.5f, "arrowRotationZ", 720f, "BounceV2", P1.gameObject, 2, 11f },
+            new object[]{48f + 5.5f, 5.5f, "stealth", .85f, "BounceV2", P1.gameObject, 2, 11f },
 
 
-            //new object[]{ 8f, .5f, "moveX", -1f, "EaseInOutElastic", P1.ReceptorL },
-            //new object[]{ 8f, .5f, "moveX", -1f, "EaseInOutElastic", P1.ReceptorD },
-            //new object[]{ 8f, .5f, "moveX", 1f, "EaseInOutElastic", P1.ReceptorU },
-            //new object[]{ 8f, .5f, "moveX", 1f, "EaseInOutElastic", P1.ReceptorR },
-            //new object[]{ 8.5f, .5f, "moveY", 1f, "EaseInOutElastic", P1.ReceptorL },
-            //new object[]{ 8.5f, .5f, "moveY", 1f, "EaseInOutElastic", P1.ReceptorD },
-            //new object[]{ 8.5f, .5f, "moveY", -1f, "EaseInOutElastic", P1.ReceptorU },
-            //new object[]{ 8.5f, .5f, "moveY", -1f, "EaseInOutElastic", P1.ReceptorR },
+            //Accent effect!
+            new object[]{58f, 0f, "pathTypeZ", "Float", P1.gameObject },
+            new object[]{58f, 0f, "pathTypeZ", "Float", P2.gameObject },
+            new object[]{58f, 0f, "pathFreqZ", 4f,"Linear", P1.gameObject },
+            new object[]{58f, 0f, "pathFreqZ", 4f,"Linear", P2.gameObject },
 
-            //new object[]{ 9f, .5f, "moveX", 1f, "EaseInOutElastic", P1.ReceptorL },
-            //new object[]{ 9f, .5f, "moveX", 1f, "EaseInOutElastic", P1.ReceptorD },
-            //new object[]{ 9f, .5f, "moveX", -1f, "EaseInOutElastic", P1.ReceptorU },
-            //new object[]{ 9f, .5f, "moveX", -1f, "EaseInOutElastic", P1.ReceptorR },
-            //new object[]{ 9.5f, .5f, "moveY", -1f, "EaseInOutElastic", P1.ReceptorL },
-            //new object[]{ 9.5f, .5f, "moveY", -1f, "EaseInOutElastic", P1.ReceptorD },
-            //new object[]{ 9.5f, .5f, "moveY", 1f, "EaseInOutElastic", P1.ReceptorU },
-            //new object[]{ 9.5f, .5f, "moveY", 1f, "EaseInOutElastic", P1.ReceptorR },
+            new object[]{59f, 1f, "pathMagZ", 4f, "BounceV2",P1.gameObject},
+            new object[]{59f, 1f, "pathMagZ", 4f, "BounceV2", P2.gameObject},
+            new object[]{59f, 1f, "whiteout", 1f, "BounceV2",P1.gameObject},
+            new object[]{59f, 1f, "whiteout", 1f, "BounceV2", P2.gameObject},
 
-            //new object[]{ 12f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorL  },
-            //new object[]{ 12f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorD  },
-            //new object[]{ 12f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorU  },
-            //new object[]{ 12f, .5f, "moveX", -.640f * 3f, "EaseInOutQuad", P1.ReceptorR  },
-            //new object[]{ 12f, .5f, "rotateZ", -45f, "Bounce", P1.ReceptorR  },
-            //new object[]{ 12.5f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorL  },
-            //new object[]{ 12.5f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorD  },
-            //new object[]{ 12.5f, .5f, "moveX", -.640f * 3f, "EaseInOutQuad", P1.ReceptorU  },
-            //new object[]{ 12.5f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorR  },
-            //new object[]{ 12.5f, .5f, "rotateZ", -45f, "Bounce", P1.ReceptorU  },
-            //new object[]{ 13f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorL  },
-            //new object[]{ 13f, .5f, "moveX", -.640f * 3f, "EaseInOutQuad", P1.ReceptorD  },
-            //new object[]{ 13f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorU  },
-            //new object[]{ 13f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorR  },
-            //new object[]{ 13f, .5f, "rotateZ", -45f, "Bounce", P1.ReceptorD  },
-            //new object[]{ 13.5f, .5f, "moveX", -.640f * 3f, "EaseInOutQuad", P1.ReceptorL  },
-            //new object[]{ 13.5f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorD  },
-            //new object[]{ 13.5f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorU  },
-            //new object[]{ 13.5f, .5f, "moveX", .640f, "EaseInOutQuad", P1.ReceptorR  },
-            //new object[]{ 13.5f, .5f, "rotateZ", -45f, "Bounce", P1.ReceptorL  },
+            #endregion
 
-            //new object[]{ 14f, .5f, "scale", 1.5f, "Bounce", P1.ReceptorL,  2, .5f},
-            //new object[]{ 14f, .5f, "scale", 1.5f, "Bounce", P1.ReceptorD,  2, .5f},
-            //new object[]{ 14f, .5f, "scale", 1.5f, "Bounce", P1.ReceptorU,  2, .5f},
-            //new object[]{ 14f, .5f, "scale", 1.5f, "Bounce", P1.ReceptorR,  2, .5f},
+            new object[]{70f, 1f, "moveX", -2f, "Linear", P1.spawners},
+            new object[]{70f, 1f, "moveX", 2f, "Linear", P2.spawners},
 
-            //new object[]{ 15f, .5f, "moveY", 2f, "Bounce", P1.ReceptorD },
-            //new object[]{ 15.5f, .5f, "moveY", 2f, "Bounce", P1.ReceptorR },
+            new object[]{70f, 0f, "moveX", -.5f, "Linear", P1.ReceptorL},
+            new object[]{70f, 0f, "moveX", .5f, "Linear", P2.ReceptorL},
+            new object[]{70f, 0f, "moveX", -.5f, "Linear", P1.ReceptorD},
+            new object[]{70f, 0f, "moveX", .5f, "Linear", P2.ReceptorD},
+            new object[]{70f, 0f, "moveX", -.5f, "Linear", P1.ReceptorU},
+            new object[]{70f, 0f, "moveX", .5f, "Linear", P2.ReceptorU},
+            new object[]{70f, 0f, "moveX", -.5f, "Linear", P1.ReceptorR},
+            new object[]{70f, 0f, "moveX", .5f, "Linear", P2.ReceptorR},
 
-            //new object[]{ 16f, .2f, "moveX", .5f, "Bounce", P1.receptors,  4, 2f},
-            //new object[]{ 17f, .2f, "moveX", -.5f, "Bounce", P1.receptors,  4, 2f},
+            new object[]{70.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorL},
+            new object[]{70.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorL},
+            new object[]{70.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorD},
+            new object[]{70.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorD},
+            new object[]{70.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorU},
+            new object[]{70.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorU},
+            new object[]{70.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorR},
+            new object[]{70.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorR},
 
-            //new object[]{ 24f, 4f, "moveZ", -3.5f, "EaseIn", P1.gameObject  },
+            new object[]{71f, 0f, "moveX", -.5f, "Linear", P1.ReceptorL},
+            new object[]{71f, 0f, "moveX", .5f, "Linear", P2.ReceptorL},
+            new object[]{71f, 0f, "moveX", -.5f, "Linear", P1.ReceptorD},
+            new object[]{71f, 0f, "moveX", .5f, "Linear", P2.ReceptorD},
+            new object[]{71f, 0f, "moveX", -.5f, "Linear", P1.ReceptorU},
+            new object[]{71f, 0f, "moveX", .5f, "Linear", P2.ReceptorU},
+            new object[]{71f, 0f, "moveX", -.5f, "Linear", P1.ReceptorR},
+            new object[]{71f, 0f, "moveX", .5f, "Linear", P2.ReceptorR},
 
-            //new object[]{ 28f, .1f, "moveX", -.5f, "Linear", P1.ReceptorL  },
-            //new object[]{ 28f, .1f, "moveX", -.25f, "Linear", P1.ReceptorD  },
-            //new object[]{ 28f, .1f, "moveX", .25f, "Linear", P1.ReceptorU  },
-            //new object[]{ 28f, .1f, "moveX", .5f, "Linear", P1.ReceptorR  },
+            new object[]{71.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorL},
+            new object[]{71.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorL},
+            new object[]{71.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorD},
+            new object[]{71.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorD},
+            new object[]{71.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorU},
+            new object[]{71.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorU},
+            new object[]{71.5f, 0f, "moveX", -.5f, "Linear", P1.ReceptorR},
+            new object[]{71.5f, 0f, "moveX", .5f, "Linear", P2.ReceptorR},
 
-            new object[]{ 30f, 2f, "playAnimation", "FadeToWhite", backgroundAnimations, "Speed"},
-            new object[]{ 30f, 2, "playAnimation", "LightToStage", lightAnimations, "Speed"},
-            //new object[]{ 32f, .1f, "moveX", .5f, "Linear", P1.ReceptorL  },
-            //new object[]{ 32f, .1f, "moveX", .25f, "Linear", P1.ReceptorD  },
-            //new object[]{ 32f, .1f, "moveX", -.25f, "Linear", P1.ReceptorU  },
-            //new object[]{ 32f, .1f, "moveX", -.5f, "Linear", P1.ReceptorR  },
-            //new object[]{ 32f, .1f, "moveZ", 3.5f, "EaseIn", P1.gameObject  },
+            new object[]{72f, 0f, "dark", 1f, "Linear", P2.gameObject },
+            new object[]{72f, 0f, "stealth", 1f, "Linear", P2.gameObject },
 
-            new object[]{ 32f, 96f, "playAnimation", "RoadStartMultiplayer", backgroundAnimations, "WorldSpeed" },
+            new object[]{72f, 0f, "togglePlayfield", P2.gameObject},
 
-            new object[]{ 32f, 1.25, "moveX", .5f, "EaseInOutQuad", P1.gameObject,  3, 4f},
+            new object[]{72f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorL},
+            new object[]{72f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorD},
+            new object[]{72f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorU},
+            new object[]{72f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorR},
 
-            new object[]{33f, .75f, "playAnimation", "CityFlash", backgroundAnimations, "FlashSpeed", 95, 2f},
+            new object[]{72f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorL},
+            new object[]{72f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorD},
+            new object[]{72f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorU},
+            new object[]{72f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorR},
 
-            //new object[]{ 33f, .25f, "moveX", -.5f, "EaseInOutQuad", P1.gameObject,  3, 4f},
-            //new object[]{ 34f, .25f, "moveX", -.5f, "EaseInOutQuad", P1.gameObject,  3, 4f},
-            //new object[]{ 35f, .25f, "moveX", .5f, "EaseInOutQuad", P1.gameObject,  3, 4f},
+            new object[]{72f, 1f, "moveX", -receptor_distance, "EaseIn", P1.ReceptorL},
+            new object[]{72f, 1f, "moveX", -receptor_distance*.4f, "EaseIn", P1.ReceptorD},
+            new object[]{72f, 1f, "moveX", receptor_distance*.4f, "EaseIn", P1.ReceptorU},
+            new object[]{72f, 1f, "moveX", receptor_distance, "EaseIn", P1.ReceptorR},
 
-            //new object[]{ 44f, 1f, "moveZ", -2f, "Bounce", P1.gameObject,  4, 1f },
+            new object[]{72f, 94f, "moveY", .4f, "Float,24", P1.ReceptorL,},
+            new object[]{72.2f, 94f, "moveY", .4f, "Float,24", P1.ReceptorD,},
+            new object[]{72.4f, 94f, "moveY", .4f, "Float,24", P1.ReceptorU,},
+            new object[]{72.6f, 94f, "moveY", .4f, "Float,24", P1.ReceptorR,},
 
-            //new object[]{ 48f, .25f, "moveX", -.5f, "EaseInOutQuad", P1.gameObject,  3, 4},
-            //new object[]{ 49f, .25f, "moveX", .5f, "EaseInOutQuad", P1.gameObject,  3, 4},
-            //new object[]{ 50f, .25f, "moveX", .5f, "EaseInOutQuad", P1.gameObject,  3, 4},
-            //new object[]{ 51f, .25f, "moveX", -.5f, "EaseInOutQuad", P1.gameObject,  3, 4},
 
-            //new object[]{ 60f, 1f, "moveZ", -1f, "Bounce", P1.gameObject,  4, 1f },
+            new object[]{75f, 1f, "moveX", receptor_distance*4, "WhipIn,2.5", P1.ReceptorL   ,3,6f},
+            new object[]{75f, 1f, "moveX", receptor_distance*2, "WhipIn,2.5", P1.ReceptorD   ,3,6f},
+            new object[]{75f, 1f, "moveX", -receptor_distance*2, "WhipIn,2.5", P1.ReceptorU  ,3,6f},
+            new object[]{75f, 1f, "moveX", -receptor_distance*4, "WhipIn,2.5", P1.ReceptorR  ,3,6f},
 
-            //new object[]{ 64f, 2f, "moveY", 1f, "Linear", P1.receptors  },
-            //new object[]{ 66.5f, .5f, "moveY", -1f, "EaseInOutQuad", P1.receptors  },
+            //Add some swerving to P1 on these Fade to Fades
 
-            //new object[]{ 67.5f, 2f, "moveY", 1f, "Linear", P1.receptors  },
-            //new object[]{ 70.5f, .5f, "moveY", -1f, "EaseInOutQuad", P1.receptors  },
+            #region MOD - Fade to Fade 
+            //P2 is now set
+            new object[]{90f, 0f, "scale", 0.5f, "Linear", P2.gameObject },
+            new object[]{90f, 0f, "whiteout", 1f, "Linear", P2.gameObject },
 
-            //new object[]{ 71.5f, 2f, "moveY", 1f, "Linear", P1.receptors  },
-            //new object[]{ 74.5f, .5f, "moveY", -1f, "EaseInOutQuad", P1.receptors  },
+            new object[]{90f, 0f, "moveZ", -4f, "Linear", P2.gameObject },
+            new object[]{90f, 0f, "moveY", -2f, "Linear", P2.gameObject },
 
-            //new object[]{ 76.5f, .9f, "rotateZ", 20f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{ 77.5f, .9f, "rotateZ", -40f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{ 78.5f, .9f, "rotateZ", 20f, "EaseInOutQuad", P1.gameObject  },
+            new object[]{90f, 0f, "moveZ", -1f, "Linear", P2.spawners },
+            new object[]{90f, 0f, "moveY", .5f, "Linear", P2.spawners },
 
-            //new object[]{ 79.5f, .1f, "resetRotation", 0f, "Linear", P1.gameObject },
+            new object[]{90f, 0f, "pathTypeX", "Float", P2.gameObject },
+            new object[]{90f, 0f, "pathMagX", .15f, "Linear", P2.gameObject },
+            new object[]{90f, 0f, "pathFreqX", 1.5f, "Linear", P2.gameObject },
 
-            //new object[]{ 79.5f, 2f, "moveY", 1f, "Linear", P1.receptors  },
-            //new object[]{ 82.5f, .5f, "moveY", -1f, "EaseInOutQuad", P1.receptors  },
+            //P1 is fading out
+                
+            new object[]{90f, 3f, "dark", 1f, "EaseIn", P1.gameObject },
+            new object[]{90f, 3f, "stealth", 1f, "EaseIn", P1.gameObject },
 
-            //new object[]{ 83.5f, 2f, "moveY", 1f, "Linear", P1.receptors  },
-            //new object[]{ 86.5f, .5f, "moveY", -1f, "EaseInOutQuad", P1.receptors  },
+            new object[]{90f, 0.95f, "moveZ", -4f, "EaseIn", P1.gameObject },
+            new object[]{91f, 2f, "moveZ", 4f, "EaseOut", P1.gameObject },
+            
+            //Toggle between the playfields
 
-            //new object[]{ 87.5f, .2f, "moveX", .1f, "Float", P1.receptors, 10, .2f },
-            //new object[]{ 87.5f, 2f, "moveY", 1f, "Linear", P1.receptors },
-            //new object[]{ 90.5f, .5f, "moveY", -1f, "EaseInOutQuad", P1.receptors  },
+            new object[]{93f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorL},
+            new object[]{93f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorD},
+            new object[]{93f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorU},
+            new object[]{93f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorR},
 
-            //new object[]{ 92.5f, .9f, "rotateZ", -15f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{ 93.5f, .9f, "rotateZ", 30f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{ 94.5f, .9f, "rotateZ", -15f, "EaseInOutQuad", P1.gameObject  },
+            new object[]{93f, 0f, "togglePlayfield", P1.gameObject},
+      
+            //Fade in P2
 
-            //new object[]{ 96f, .2f, "moveX", .5f, "Bounce", P1.receptors,  6, 2f},
-            //new object[]{ 97f, .2f, "moveX", -.5f, "Bounce", P1.receptors,  6, 2f},
+            new object[]{93f, 3f, "dark", 0f, "EaseIn", P2.gameObject },
+            new object[]{93f, 3f, "stealth", 0.5f, "EaseIn", P2.gameObject },
 
-            //new object[]{108.5f, 1f, "moveY", 1f, "Bounce", P1.gameObject,  3, 1f },
+            new object[]{93.25f, 0f, "togglePlayfield", P2.gameObject},
 
-            //new object[]{ 112f, .2f, "moveY", .5f, "Bounce", P1.receptors,  6, 2f},
-            //new object[]{ 113f, .2f, "moveY", -.5f, "Bounce", P1.receptors,  6, 2f},
+            //Fade out P2, and Fade In P1
 
-            //new object[]{124.5f, 1f, "moveZ", 1f, "InstantIn", P1.gameObject  },
-            //new object[]{125.5f, 1f, "moveZ", -1f, "InstantIn", P1.gameObject  },
-            //new object[]{126.5f, 1f, "moveZ", 1f, "InstantIn", P1.gameObject  },
+            new object[]{99f, 3f, "dark", 1f, "EaseIn", P2.gameObject },
+            new object[]{99f, 3f, "stealth", 1f, "EaseIn", P2.gameObject },
+            new object[]{99f, 3f, "whiteout", 0f, "EaseIn", P2.gameObject },
 
-            //new object[]{128f, 4f, "moveX", 3f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{128f, 4f, "moveZ", -1f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{128f, 4f, "rotateY", 15f, "EaseInOutQuad", P1.gameObject  },
-            ////new object[]{128f, 0.5f, "playParticles", postArrowR,  2, 2f},
+            new object[]{99f, 3f, "dark", 0f, "EaseIn", P1.gameObject },
+            new object[]{99f, 3f, "stealth", 0f, "EaseIn", P1.gameObject },
+            new object[]{99.25f, 0f, "togglePlayfield", P1.gameObject},
 
-            ////new object[]{144f, 0.5f, "playParticles", postArrowL,  2, 2f},
-            //new object[]{144f, 4f, "moveX", -6f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{144f, 2f, "moveZ", 1f, "EaseOut", P1.gameObject  },
-            //new object[]{144f, 4f, "rotateY", -30f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{146f, 2f, "moveZ", -1f, "EaseOut", P1.gameObject  },
+            new object[]{101.95f, 0f, "togglePlayfield", P2.gameObject},
 
-            //new object[]{156f, 4f, "moveX", 3f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{156f, 4f, "moveZ", 1f, "EaseInOutQuad", P1.gameObject  },
-            //new object[]{156f, 4f, "rotateY", 15f, "EaseInOutQuad", P1.gameObject  },
+#endregion
 
-            //new object[]{160f, 1f, "moveY", 1f, "Float", P1.spawners,  3, 1f },
+            new object[]{105f, 1f, "moveX", receptor_distance*4, "WhipIn,2.5", P1.ReceptorL   ,6,6f},
+            new object[]{105f, 1f, "moveX", receptor_distance*2, "WhipIn,2.5", P1.ReceptorD   ,6,6f},
+            new object[]{105f, 1f, "moveX", -receptor_distance*2, "WhipIn,2.5", P1.ReceptorU  ,6,6f},
+            new object[]{105f, 1f, "moveX", -receptor_distance*4, "WhipIn,2.5", P1.ReceptorR  ,6,6f},
 
-            //new object[]{163.5f, 1f, "moveZ", 3f, "InstantIn", P1.receptors  },
+            //Accent
+            new object[]{107f, 1f, "pathMagZ", 4f, "Bounce",P1.gameObject},
+            new object[]{107f, 1f, "whiteout", 1f, "Bounce",P1.gameObject},
 
-            //new object[]{164.5f, 1f, "moveY", 1f, "Float", P1.spawners,  3, 1f },
-            //new object[]{168f, 1f, "moveY", 1f, "Float", P1.spawners,  3, 1f },
+            new object[]{120f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorL},
+            new object[]{120f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorD},
+            new object[]{120f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorU},
+            new object[]{120f, 1f, "rotateZ", 720f, "Linear", P1.ReceptorR},
 
-            //new object[]{171.5f, 1f, "moveZ", -3f, "InstantIn", P1.receptors  },
+            new object[]{120f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorL},
+            new object[]{120f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorD},
+            new object[]{120f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorU},
+            new object[]{120f, 1f, "scale", 2f, "Flip:EaseIn", P1.ReceptorR},
 
-            //new object[]{179.5f, 1f, "moveZ", 3f, "InstantIn", P1.receptors  },
+            #region MOD - Fade to Fade 2
 
-            //new object[]{180.5f, 1f, "moveY", 1f, "Float", P1.spawners,  3, 1f },
-            //new object[]{184f, 1f, "moveY", 1f, "Float", P1.spawners,  3, 1f },
+            new object[]{138f, 0f, "whiteout", 1f, "Linear", P2.gameObject },
 
-            //new object[]{187.5f, 1f, "moveZ", -3f, "InstantIn", P1.receptors  },
+            new object[]{138f, 3f, "dark", 1f, "EaseIn", P1.gameObject },
+            new object[]{138f, 3f, "stealth", 1f, "EaseIn", P1.gameObject },
+            new object[]{138f, 0.95f, "moveZ", -4f, "EaseIn", P1.gameObject },
+            new object[]{139f, 2f, "moveZ", 4f, "EaseOut", P1.gameObject },
 
-            //new object[]{192f, .5f, "moveZ", -4f, "EaseIn", P1.gameObject},
-            //new object[]{192f, 15f, "moveY", .25f, "Float", P1.receptors,  2, 15f },
-            //new object[]{192f, 7.5f, "rotateZ", 6f, "Float", P1.receptors,  4, 7.5f },
+            new object[]{141f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorL},
+            new object[]{141f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorD},
+            new object[]{141f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorU},
+            new object[]{141f, 9f, "rotateZ", 25f, "Float,4", P2.ReceptorR},
 
-            //new object[]{ 192f, 92f, "playAnimation", "RoadFinishMultiplayer", backgroundAnimations, "WorldSpeed"},
+            new object[]{141f, 0f, "togglePlayfield", P1.gameObject},
 
-            //new object[]{224f, .5f, "moveZ", 4f, "EaseIn", P1.gameObject},
+            new object[]{141f, 3f, "dark", 0f, "EaseIn", P2.gameObject },
+            new object[]{141f, 3f, "stealth", 0.5f, "EaseIn", P2.gameObject },
 
-            //new object[]{224f, .25f, "moveZ", -7f, "EaseOut", P1.spawners},
-            //new object[]{251.5f, .25f, "moveZ", 7f, "EaseOut", P1.spawners  },
+            new object[]{141.25f, 0f, "togglePlayfield", P2.gameObject},
 
-            ////new object[]{256f, 1f, "playParticles", receptorsExplosionParticles,  6, 2f},
-            //new object[]{256f, 1f, "moveX", -.5f, "Bounce", P1.ReceptorL,  6, 2f },
-            //new object[]{256f, 1f, "moveX", -.25f, "Bounce", P1.ReceptorD,  6, 2f },
-            //new object[]{256f, 1f, "moveX", .25f, "Bounce", P1.ReceptorU,  6, 2f },
-            //new object[]{256f, 1f, "moveX", .5f, "Bounce", P1.ReceptorR,  6, 2f },
+            new object[]{147f, 3f, "dark", 1f, "EaseIn", P2.gameObject },
+            new object[]{147f, 3f, "stealth", 1f, "EaseIn", P2.gameObject },
+            new object[]{147f, 3f, "whiteout", 0f, "EaseIn", P2.gameObject },
 
-            //new object[]{257f, 1f, "playAnimation", "CityFlash", backgroundAnimations, "FlashSpeed", 14, 2f },
 
-            //new object[]{268f, 2f, "moveY", 1f, "Float", P1.receptors,  2, 2f },
 
-            //new object[]{272f, 2f, "moveX", .75f, "Float", P1.receptors,  6, 2f },
+            new object[]{147f, 2.75f, "dark", 0f, "EaseIn", P1.gameObject },
+            new object[]{147f, 2.75f, "stealth", 0f, "EaseIn", P1.gameObject },
+            new object[]{147.25f, 0f, "togglePlayfield", P1.gameObject},
 
-            //new object[]{287.5f, 3f, "moveY", 50f, "EaseIn", P1.receptors  },
-};
+            new object[]{149.75f, 0f, "togglePlayfield", P2.gameObject},
+            #endregion
+
+            new object[]{153f, 1f, "moveX", receptor_distance*4, "WhipIn,2.5", P1.ReceptorL   ,3,6f},
+            new object[]{153f, 1f, "moveX", receptor_distance*2, "WhipIn,2.5", P1.ReceptorD   ,3,6f},
+            new object[]{153f, 1f, "moveX", -receptor_distance*2, "WhipIn,2.5", P1.ReceptorU  ,3,6f},
+            new object[]{153f, 1f, "moveX", -receptor_distance*4, "WhipIn,2.5", P1.ReceptorR  ,3,6f},
+
+            new object[]{155f, 1f, "pathMagZ", 4f, "Bounce",P1.gameObject},
+            new object[]{155f, 1f, "whiteout", 1f, "Bounce",P1.gameObject},
+
+            new object[]{164f, 0f, "resetPosition", 0f, "Linear", P2.receptors },
+            new object[]{164f, 0f, "resetPosition", 0f, "Linear", P2.spawners },
+            new object[]{164f, 0f, "resetPlayfield", 0f, "Linear", P2.gameObject },
+
+            new object[]{164f, 0f, "pathMagX", .35f, "Linear", P2.gameObject },
+            new object[]{164f, 0f, "pathFreqX", 2f, "Linear", P2.gameObject },
+
+
+            new object[]{164f, 0f, "moveX", -1f, "Linear", P2.ReceptorL},
+            new object[]{164f, 0f, "moveX", 1f, "Linear", P2.ReceptorR},
+            new object[]{164f, 0f, "moveX", -1f, "Linear", P2.spawnL},
+            new object[]{164f, 0f, "moveX", 1f, "Linear", P2.spawnR},
+
+            new object[]{164f, 1.5f, "dark", 1f, "EaseIn", P1.gameObject },
+            new object[]{164f, 1.5f, "stealth", 1f, "EaseIn", P1.gameObject },
+
+            new object[]{165f, 0f, "scale", 1.5f, "Linear", P2.gameObject },
+
+            new object[]{165f, 0f, "moveY", 2f, "Linear", P2.spawners},
+            new object[]{165f, 0f, "moveY", 1f, "Linear", P2.receptors},
+            new object[]{165f, 0f, "moveZ", -3.5f, "Linear", P2.spawners},
+            new object[]{165f, 0f, "moveZ", 3f, "Linear", P2.receptors},
+
+            new object[]{165f, 0f, "moveY", -1f, "EaseOut", P2.gameObject },
+
+            new object[]{165.5f, 0f, "togglePlayfield", P1.gameObject},
+
+            new object[]{166f, 2f, "dark", 0f, "EaseIn", P2.gameObject },
+            new object[]{166f, 2f, "stealth", 0f, "EaseIn", P2.gameObject },
+
+            new object[]{166f, 0f, "togglePlayfield", P2.gameObject},
+
+            new object[]{168f, 2f, "moveX", 1f, "EaseOutCirc", P2.ReceptorL},
+            new object[]{168f, 2f, "moveX", -1f, "EaseOutCirc", P2.ReceptorR},
+            new object[]{168f, 2f, "moveX", 1f, "EaseOutCirc", P2.spawnL},
+            new object[]{168f, 2f, "moveX", -1f, "EaseOutCirc", P2.spawnR},
+
+            new object[]{168f, 2f, "rotateZ", -360f, "EaseIn", P2.ReceptorL},
+            new object[]{168f, 2f, "rotateZ", 360f, "EaseIn", P2.ReceptorR},
+
+            new object[]{174f, 2f, "moveX", -1f, "EaseOutCirc", P2.ReceptorL},
+            new object[]{174f, 2f, "moveX", -1f, "EaseOutCirc", P2.ReceptorD},
+            new object[]{174f, 2f, "moveX", -1f, "EaseOutCirc", P2.spawnL},
+            new object[]{174f, 2f, "moveX", -1f, "EaseOutCirc", P2.spawnD},
+
+            new object[]{174f, 2f, "moveX", 1f, "EaseOutCirc", P2.ReceptorR},
+            new object[]{174f, 2f, "moveX", 1f, "EaseOutCirc", P2.ReceptorU},
+            new object[]{174f, 2f, "moveX", 1f, "EaseOutCirc", P2.spawnR},
+            new object[]{174f, 2f, "moveX", 1f, "EaseOutCirc", P2.spawnU},
+
+            new object[]{174f, 2f, "rotateZ", 360f, "EaseIn", P2.ReceptorL},
+            new object[]{174f, 2f, "rotateZ", 360f, "EaseIn", P2.ReceptorD},
+            new object[]{174f, 2f, "rotateZ", -360f, "EaseIn", P2.ReceptorR},
+            new object[]{174f, 2f, "rotateZ", -360f, "EaseIn", P2.ReceptorU},
+
+
+            new object[]{180f, 2f, "moveX", 1f, "EaseOutCirc", P2.ReceptorL},
+            new object[]{180f, 2f, "moveX", 1f, "EaseOutCirc", P2.ReceptorD},
+            new object[]{180f, 2f, "moveX", 1f, "EaseOutCirc", P2.spawnL},
+            new object[]{180f, 2f, "moveX", 1f, "EaseOutCirc", P2.spawnD},
+
+            new object[]{180f, 2f, "moveX", -1f, "EaseOutCirc", P2.ReceptorR},
+            new object[]{180f, 2f, "moveX", -1f, "EaseOutCirc", P2.ReceptorU},
+            new object[]{180f, 2f, "moveX", -1f, "EaseOutCirc", P2.spawnR},
+            new object[]{180f, 2f, "moveX", -1f, "EaseOutCirc", P2.spawnU},
+
+            new object[]{180f, 2f, "rotateZ", -360f, "EaseIn", P2.ReceptorL},
+            new object[]{180f, 2f, "rotateZ", -360f, "EaseIn", P2.ReceptorD},
+            new object[]{180f, 2f, "rotateZ", 360f, "EaseIn", P2.ReceptorR},
+            new object[]{180f, 2f, "rotateZ", 360f, "EaseIn", P2.ReceptorU},
+
+            new object[]{184f, 0f, "moveX", receptor_distance, "EaseIn", P1.ReceptorL},
+            new object[]{184f, 0f, "moveX", receptor_distance*.4f, "EaseIn", P1.ReceptorD},
+            new object[]{184f, 0f, "moveX", -receptor_distance*.4f, "EaseIn", P1.ReceptorU},
+            new object[]{184f, 0f, "moveX", -receptor_distance, "EaseIn", P1.ReceptorR},
+
+            new object[]{185f, 2f, "dark", 1f, "Linear", P2.gameObject },
+            new object[]{185f, 2f, "stealth", 1f, "Linear", P2.gameObject },
+
+            new object[]{185f, 4f, "moveX", -4.5f, "EaseOutCirc", P2.ReceptorL},
+            new object[]{185f, 4f, "moveX", -4.5f, "EaseOutCirc", P2.ReceptorD},
+            new object[]{185f, 4f, "moveX", -4.5f, "EaseOutCirc", P2.spawnL},
+            new object[]{185f, 4f, "moveX", -4.5f, "EaseOutCirc", P2.spawnD},
+
+            new object[]{185f, 4f, "rotateZ", 1080f, "EaseIn", P2.ReceptorL},
+            new object[]{185f, 4f, "rotateZ", 1080f, "EaseIn", P2.ReceptorD},
+
+            new object[]{186f, 4f, "moveX", 4.5f, "EaseOutCirc", P2.ReceptorR},
+            new object[]{186f, 4f, "moveX", 4.5f, "EaseOutCirc", P2.ReceptorU},
+            new object[]{186f, 4f, "moveX", 4.5f, "EaseOutCirc", P2.spawnR},
+            new object[]{186f, 4f, "moveX", 4.5f, "EaseOutCirc", P2.spawnU},
+
+            new object[]{186f, 4f, "rotateZ", -1080f, "EaseIn", P2.ReceptorR},
+            new object[]{186f, 4f, "rotateZ", -1080f, "EaseIn", P2.ReceptorU},
+
+            new object[]{186f, 6f, "dark", 0f, "Linear", P1.gameObject },
+            new object[]{186f, 0f, "stealth", 0f, "Linear", P1.gameObject },
+            new object[]{186f, 0f, "moveY", -4.2f, "Linear", P1.receptors },
+            new object[]{186f, 0f, "rotateX", 90f, "Linear", P1.receptors },
+            new object[]{186f, 0f, "moveY", 16f, "Linear", P1.spawners },
+            new object[]{186f, 0f, "moveZ", 8f, "Linear", P1.spawners },
+            new object[]{186f, 0f, "moveZ", 1.5f, "Linear", P1.receptors },
+
+            new object[]{186f, 0f, "scale", 2.5f, "Linear", P1.ReceptorL},
+            new object[]{186f, 0f, "scale", 2.5f, "Linear", P1.ReceptorD},
+            new object[]{186f, 0f, "scale", 2.5f, "Linear", P1.ReceptorU},
+            new object[]{186f, 0f, "scale", 2.5f, "Linear", P1.ReceptorR},
+
+            new object[]{186f, 0f, "moveX", -3.5f, "Linear", P1.ReceptorL},
+            new object[]{186f, 0f, "moveX", -1.5f, "Linear", P1.ReceptorD},
+            new object[]{186f, 0f, "moveX", 1.5f, "Linear", P1.ReceptorU},
+            new object[]{186f, 0f, "moveX", 3.5f, "Linear", P1.ReceptorR},
+
+            new object[]{186f, 0f, "moveX", -3.5f / 2, "Linear", P1.spawnL},
+            new object[]{186f, 0f, "moveX", -1.5f / 2, "Linear", P1.spawnD},
+            new object[]{186f, 0f, "moveX", 1.5f / 2, "Linear", P1.spawnU},
+            new object[]{186f, 0f, "moveX", 3.5f / 2, "Linear", P1.spawnR},
+
+            new object[]{186f, 0f, "arrowSizeX", 2.5f, "Linear", P1.gameObject},
+            new object[]{186f, 0f, "arrowSizeY", 2.5f, "Linear", P1.gameObject},
+            new object[]{186f, 0f, "arrowSizeZ", 2.5f, "Linear", P1.gameObject},
+
+            new object[]{186f, 0f, "togglePlayfield", P1.gameObject},
+
+            new object[]{186.1f, 46f, "rotateZ", 25f, "Float,10", P1.ReceptorL},
+            new object[]{186.1f, 46f, "moveX", .22f, "Float,9", P1.ReceptorL},
+            new object[]{186.2f, 46f, "moveX", .15f, "Float,10", P1.ReceptorD},
+            new object[]{186.2f, 46f, "rotateZ", -23f, "Float,9", P1.ReceptorD},
+            new object[]{186.3f, 46f, "moveX", -.13f, "Float,12", P1.ReceptorU},
+            new object[]{186.3f, 46f, "rotateZ", 26f, "Float,11", P1.ReceptorU},
+            new object[]{186.4f, 46f, "moveX", -.25f, "Float,11", P1.ReceptorR},
+            new object[]{186.4f, 46f, "rotateZ", -24f, "Float,12", P1.ReceptorR},
+
+            new object[]{187f, 0f, "togglePlayfield", P2.gameObject},
+
+            new object[]{188f, 0f, "pathTypeX", "Float", P1.gameObject },
+            new object[]{188f, 0f, "pathMagX", .35f, "Linear", P1.gameObject },
+
+
+            new object[]{210f, 24f, "moveZ", 3f, "Float,4", P1.receptors},
+
+            new object[]{210f, 0f, "resetPlayfield", P2.gameObject},
+            new object[]{210f, 0f, "scale", 1f, "Linear", P2.gameObject },
+            new object[]{210f, 0f, "resetPosition", 0f, "Linear", P2.receptors},
+            new object[]{210f, 0f, "resetPosition", 0f, "Linear", P2.spawners},
+
+            new object[]{210f, 0f, "moveX", 4.5f, "Linear", P2.ReceptorL},
+            new object[]{210f, 0f, "moveX", 4.5f, "Linear", P2.ReceptorD},
+            new object[]{210f, 0f, "moveX", -4.5f, "Linear", P2.ReceptorU},
+            new object[]{210f, 0f, "moveX", -4.5f, "Linear", P2.ReceptorR},
+
+            new object[]{210f, 0f, "moveX", 4.5f, "Linear", P2.spawnL},
+            new object[]{210f, 0f, "moveX", 4.5f, "Linear", P2.spawnD},
+            new object[]{210f, 0f, "moveX", -4.5f, "Linear", P2.spawnU},
+            new object[]{210f, 0f, "moveX", -4.5f, "Linear", P2.spawnR},
+
+            new object[]{210f, 0f, "dark", 1f, "Linear", P2.gameObject },
+            new object[]{210f, 0f, "stealth", 1f, "Linear", P2.gameObject },
+            new object[]{211f, 0f, "moveY", 1f ,"Linear",P2.gameObject},
+
+            new object[]{230f, 0f, "togglePlayfield", P2.gameObject},
+            new object[]{230f, 0f, "moveZ", 4f, "Linear", P2.gameObject },
+            new object[]{230f, 2f, "dark", 0f, "Linear", P2.gameObject },
+            new object[]{230f, 2f, "dark", 1f, "Linear", P1.gameObject },
+            new object[]{230f, 2f, "stealth", 1f, "Linear", P1.gameObject },
+            new object[]{230f, 0f, "pathTypeX", "", P2.gameObject },
+            new object[]{230f, 0f, "pathMagX", 0f, "Linear", P2.gameObject },
+
+            new object[]{232f, 0f, "stealth", 0f, "Linear", P2.gameObject },
+            new object[]{232f, 0f, "togglePlayfield", P1.gameObject},
+
+            new object[]{232f, 0f, "moveZ", -1f, "Linear", P2.gameObject },
+            new object[]{232.5f, 0f, "moveZ", -1f, "Linear", P2.gameObject },
+            new object[]{233f, 0f, "moveZ", -1f, "Linear", P2.gameObject },
+            new object[]{233.5f, 0f, "moveZ", -1f, "Linear", P2.gameObject },
+
+            new object[]{234f, 1f, "rotateZ", 720f, "Linear", P2.ReceptorL},
+            new object[]{234f, 1f, "rotateZ", 720f, "Linear", P2.ReceptorD},
+            new object[]{234f, 1f, "rotateZ", 720f, "Linear", P2.ReceptorU},
+            new object[]{234f, 1f, "rotateZ", 720f, "Linear", P2.ReceptorR},
+
+            new object[]{234f, 1f, "scale", 2f, "Flip:EaseIn", P2.ReceptorL},
+            new object[]{234f, 1f, "scale", 2f, "Flip:EaseIn", P2.ReceptorD},
+            new object[]{234f, 1f, "scale", 2f, "Flip:EaseIn", P2.ReceptorU},
+            new object[]{234f, 1f, "scale", 2f, "Flip:EaseIn", P2.ReceptorR},
+
+            new object[]{234f, 1f, "moveX", -receptor_distance, "EaseIn", P2.ReceptorL},
+            new object[]{234f, 1f, "moveX", -receptor_distance*.4f, "EaseIn", P2.ReceptorD},
+            new object[]{234f, 1f, "moveX", receptor_distance*.4f, "EaseIn", P2.ReceptorU},
+            new object[]{234f, 1f, "moveX", receptor_distance, "EaseIn", P2.ReceptorR},
+
+
+            //Resetting the P1 for the funny effect, P2 is already good to go
+
+            new object[]{234f, 0f, "arrowSizeX", 1f, "Linear", P1.gameObject},
+            new object[]{234f, 0f, "arrowSizeY", 1f, "Linear", P1.gameObject},
+            new object[]{234f, 0f, "arrowSizeZ", 1f, "Linear", P1.gameObject},
+
+            new object[]{234f, 0f, "scale", 1f, "Linear", P1.ReceptorL},
+            new object[]{234f, 0f, "scale", 1f, "Linear", P1.ReceptorD},
+            new object[]{234f, 0f, "scale", 1f, "Linear", P1.ReceptorU},
+            new object[]{234f, 0f, "scale", 1f, "Linear", P1.ReceptorR},
+
+            new object[]{234f, 0f, "moveX", 3.5f, "Linear", P1.ReceptorL},
+            new object[]{234f, 0f, "moveX", 1.5f, "Linear", P1.ReceptorD},
+            new object[]{234f, 0f, "moveX", -1.5f, "Linear", P1.ReceptorU},
+            new object[]{234f, 0f, "moveX", -3.5f, "Linear", P1.ReceptorR},
+
+            new object[]{234f, 0f, "moveX", 3.5f / 2, "Linear", P1.spawnL},
+            new object[]{234f, 0f, "moveX", 1.5f / 2, "Linear", P1.spawnD},
+            new object[]{234f, 0f, "moveX", -1.5f / 2, "Linear", P1.spawnU},
+            new object[]{234f, 0f, "moveX", -3.5f / 2, "Linear", P1.spawnR},
+
+            new object[]{234f, 24f, "moveY", .35f, "Float,6", P2.ReceptorL,},
+            new object[]{234.2f, 24f, "moveY", -.35f, "Float,6", P2.ReceptorD,},
+            new object[]{234.4f, 24f, "moveY", .35f, "Float,6", P2.ReceptorU,},
+            new object[]{234.6f, 24f, "moveY", -.35f, "Float,6", P2.ReceptorR,},
+
+            new object[]{235f, 0f, "resetPosition", 0f, "Linear", P1.receptors },
+            new object[]{235f, 0f, "resetPosition", 0f, "Linear", P1.spawners },
+            new object[]{235f, 0f, "resetRotation", 0f, "Linear", P1.receptors },
+            new object[]{235f, 0f, "resetRotation", 0f, "Linear", P1.spawners },
+
+            new object[]{237f, 1f, "moveX", receptor_distance*4, "WhipIn,2.5", P2.ReceptorL   ,3,6f},
+            new object[]{237f, 1f, "moveX", receptor_distance*2, "WhipIn,2.5", P2.ReceptorD   ,3,6f},
+            new object[]{237f, 1f, "moveX", -receptor_distance*2, "WhipIn,2.5", P2.ReceptorU  ,3,6f},
+            new object[]{237f, 1f, "moveX", -receptor_distance*4, "WhipIn,2.5", P2.ReceptorR  ,3,6f},
+
+            //FADE TO FADE
+
+            new object[]{252f, 0f, "scale", 0.5f, "Linear", P1.gameObject },
+            new object[]{252f, 0f, "whiteout", 1f, "Linear", P1.gameObject },
+
+            new object[]{ 252f, 0f, "moveZ", -4f, "Linear", P1.gameObject },
+            new object[]{ 252f, 0f, "moveY", -2f, "Linear", P1.gameObject },
+
+            new object[]{ 252f, 0f, "moveZ", -1f, "Linear", P1.spawners },
+            new object[]{ 252f, 0f, "moveY", .5f, "Linear", P1.spawners },
+
+            new object[]{ 252f, 0f, "pathTypeX", "Float", P1.gameObject },
+            new object[]{ 252f, 0f, "pathMagX", .15f, "Linear", P1.gameObject },
+            new object[]{ 252f, 0f, "pathFreqX", 1.5f, "Linear", P1.gameObject },
+
+            //P1 is fading out
+                
+            new object[]{ 252f, 3f, "dark", 1f, "EaseIn", P2.gameObject },
+            new object[]{ 252f, 3f, "stealth", 1f, "EaseIn", P2.gameObject },
+
+            new object[]{ 252f, 0.95f, "moveZ", -4f, "EaseIn", P2.gameObject },
+            new object[]{ 253f, 2f, "moveZ", 4f, "EaseOut", P2.gameObject },
+            
+            //Toggle between the playfields
+
+            new object[]{ 255f, 9f, "rotateZ", 25f, "Float,4", P1.ReceptorL,2,9f},
+            new object[]{255f, 9f, "rotateZ", 25f, "Float,4", P1.ReceptorD,2,9f},
+            new object[]{255f, 9f, "rotateZ", 25f, "Float,4", P1.ReceptorU,2,9f},
+            new object[]{ 255f, 9f, "rotateZ", 25f, "Float,4", P1.ReceptorR,2,9f},
+
+            new object[]{ 255f, 22f, "moveY", -10f, "EaseInOutQuad", P1.spawners },
+            new object[]{ 255f, 22f, "moveY", -10f, "EaseInOutQuad", P1.receptors },
+
+            new object[]{ 255f, 0f, "togglePlayfield", P2.gameObject},
+      
+            //Fade in P2
+
+            new object[]{255f, 3f, "dark", 0f, "EaseIn", P1.gameObject },
+            new object[]{ 255f, 3f, "stealth", 0.5f, "EaseIn", P1.gameObject },
+
+            new object[]{ 255.25f, 0f, "togglePlayfield", P1.gameObject},
+
+
+            new object[]{261f, 12f, "dark", 1f, "EaseIn", P1.gameObject },
+
+     //72 to 120,        
+
+     //120 to 166, similar mods to previous iteration, 
+
+     //the ending has similar mods to 72 to 120 and 120 to 166
+    };
     }
 
     public void LoadNormalMods()

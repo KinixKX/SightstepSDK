@@ -8,8 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Arrow
-  m_Shader: {fileID: 4800000, guid: 993cb035bdec0014eaedf55a5bf83e56, type: 3}
-  m_ShaderKeywords: AUTO_EXPOSURE DISTORT EFFECT_HUE_VARIATION _EMISSION _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+  m_Shader: {fileID: 4800000, guid: 917b37092bae034459c28c00a3a19b54, type: 3}
+  m_ShaderKeywords: AUTO_EXPOSURE DISTORT EFFECT_HUE_VARIATION VIGNETTE_MASKED _EMISSION
+    _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -984,7 +985,7 @@ Material:
     - _ScrollingEmission: 0
     - _ScrollingEmission1: 1
     - _ShadeColor_Step: 0
-    - _ShaderOptimizerEnabled: 1
+    - _ShaderOptimizerEnabled: 0
     - _ShadowMix: 0
     - _ShadowMixThreshold: 0.5
     - _ShadowMixWidthMod: 0.5
@@ -1075,7 +1076,7 @@ Material:
     - _VertexRoundingEnabled: 0
     - _VertexUnwrap: 0
     - _ZTest: 2
-    - _ZWrite: 0
+    - _ZWrite: 1
     - _commentIfZero_EnableOutlinePass: 0
     - _commentIfZero_LightingAdditiveEnable: 1
     - _glitterFrequencyLinearEmissive: 20
@@ -1263,7 +1264,7 @@ Material:
     - m_start_brdf: 0
     - m_start_clearCoat: 0
     - m_start_crossfade: 0
-    - m_start_debugOptions: 1
+    - m_start_debugOptions: 0
     - m_start_detailShadows: 0
     - m_start_dissolve: 1
     - m_start_dissolveAudioLink: 0
