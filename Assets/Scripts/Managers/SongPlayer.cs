@@ -53,6 +53,8 @@ public class SongPlayer : UdonSharpBehaviour
     Color greatColor = new Color(0.4417514f, 0.9245283f, 0.2834639f);
     Color decentColor = new Color(0.5865811f, 0.4575472f, 1);
 
+    public GameObject stagePreview;
+
     void Start()
     {
         Networking.LocalPlayer.SetRunSpeed(4);
@@ -64,6 +66,8 @@ public class SongPlayer : UdonSharpBehaviour
         currentArrow = 0;
         lastArrowHit = 0;
         pressed = new bool[4];
+
+        stagePreview.SetActive(true);
 
     }
 
@@ -214,6 +218,8 @@ public class SongPlayer : UdonSharpBehaviour
                 if (loadedLevel != -1)
                 {
                     StartSong();
+                    stagePreview.SetActive(false);
+
                     Debug.Log("Now Playing");
 
                 }

@@ -10,9 +10,9 @@ public class Debugging : UdonSharpBehaviour
     public GameObject panel;
     public SongPlayer song;
     public Text songDebugText;
+    public Text scoreDebugText;
 
     public bool debuggerDisplay = false;
-
 
     public void Update()
     {
@@ -25,6 +25,7 @@ public class Debugging : UdonSharpBehaviour
 
         if (song.songPlaying)
         {
+            scoreDebugText.text = song.accuracy.ToString("F2");
             songDebugText.text = ($"Song Beat {song.currentSongBeat}");
         }
     }

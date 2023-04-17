@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.Globalization;
 using UnityEngine;
 
 public static class ChartLoader
@@ -20,6 +19,11 @@ public static class ChartLoader
     private const int beatsPerMeasure = 4;
     private const string chartEndDelimiter = ";";
     private const string measureEndDelimiter = ",";
+
+    public static void Load(TextAsset textAsset, SongChart songChart)
+    {
+        Load(textAsset.text, songChart);
+    }
 
     public static void Load(string file, SongChart songChart)
     {
@@ -92,13 +96,13 @@ public static class ChartLoader
                 int indexToUse = firstBpmChange != -1 ? firstBpmChange : endOfBpmList;
 
                 string name = line.Substring(tagInitialBpm.Length, indexToUse - tagInitialBpm.Length);
-                float.TryParse(name, out float bpm);
+                float.TryParse(name, NumberStyles.Any, CultureInfo.InvariantCulture, out float bpm);
                 globalChartData[3] = bpm;
             }
             else if (line.StartsWith(tagOffset))
             {
                 string name = line.Substring(tagOffset.Length).TrimEnd(';');
-                float.TryParse(name, out float offset);
+                float.TryParse(name, NumberStyles.Any, CultureInfo.InvariantCulture, out float offset);
                 globalChartData[4] = offset;
             }
             // PER CHART METADATA

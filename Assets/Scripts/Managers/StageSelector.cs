@@ -34,6 +34,10 @@ public class StageSelector : UdonSharpBehaviour
     public string stageChartsBy;
     public string stageModsBy;
 
+    public Text stageNameText;
+    public Text stageInformationText;
+    public Text stageDescriptionText;
+    public Image stageIconImage;
 
     public void Start()
     {
@@ -44,10 +48,11 @@ public class StageSelector : UdonSharpBehaviour
     {
 
         SetDefaultActors(modCharts[stage]); //Set the actors
-        SetStageData(stage);
 
         modCharts[stage].InitMods();
         songCharts[stage].InitCharts();
+
+        SetStageData(stage);
  
         songPlayer.SetSongProperties();
 
@@ -133,6 +138,8 @@ public class StageSelector : UdonSharpBehaviour
 
     public void SetStageData(int stage)
     {
+        SongChart song = songCharts[stage];
+
         stageAudio = songCharts[stage].songFile;
         stageOffset = songCharts[stage].songOffset;
         stageBPM = songCharts[stage].bpm;
@@ -143,6 +150,17 @@ public class StageSelector : UdonSharpBehaviour
         stageChartsBy = songCharts[stage].chartsBy;
         stageModsBy = songCharts[stage].modsBy;
 
+        stageDescriptionText.text = song.description;
+        stageNameText.text = song.stageName;
+        stageInformationText.text =
+        $@"Song - {stageSong}
+Artist - {stageArtist}
+BPM - {stageBPM}
+Duration - {stageDuration}
+
+Chart(s) by {stageChartsBy}
+Mods by {stageModsBy}";
+        stageIconImage.sprite = song.icon;
     }
 
     public void SetDefaultActors(ModChart currentModChart)
