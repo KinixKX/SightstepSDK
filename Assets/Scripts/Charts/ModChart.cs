@@ -541,8 +541,6 @@ public class ModChart : UdonSharpBehaviour
                 break;
         }
 
-        pf.SetArrowRotations();
-
         CheckDuration(modifier);
     }
     public void arrowSize(Mods modifier, Playfield pf)
@@ -565,8 +563,6 @@ public class ModChart : UdonSharpBehaviour
                 pf.arrowSizeZ = Mathf.LerpUnclamped(modifier.originalFloat, modifier.magnitude, perc);
                 break;
         }
-
-        pf.SetArrowSize();
 
         CheckDuration(modifier);
     }
@@ -718,6 +714,19 @@ public class ModChart : UdonSharpBehaviour
         CheckDuration(modifier);
     }
 
+    public void swap(Mods modifier, Playfield pf)
+    {
+        IncrementProgress(modifier);
+
+        float perc = modifier.duration != 0 ? modifier.progress / modifier.duration : 1;
+
+        perc = ApplySmoothing(perc, modifier.ease, modifier.flipMotion, modifier.motionFreq);
+
+        pf.SwapColumns(perc);
+
+        CheckDuration(modifier);
+    }
+
     /// TEST OTHER SONGS CUZ OH GOD THIS IS SCARY TO MESS WITH. No really I am afraid this could EASILY break some stuff
     public void bpm(Mods modifier)
     {
@@ -807,6 +816,7 @@ public class ModChart : UdonSharpBehaviour
     // 4 params                          new object[]{ 30f, 2f, "toggleObject", (magnitude AND smoothing removed), P1.receptorsRoot(, 2, .5f)}                             -- TOGGLE OBJECTS
     // 4?                                new object[]{ 4f, 0f, "setBPM", 45.5f}
     // 4?                                new object[]{ 4f, 0f, "xmod", 45.5f, "Linear"}
+    // new object[]{ 15f, 1f, "swap", "LUDR", "Bounce", P1.gameObject} 
 
     public void LoadMod(Mods mod, int index)
     {
@@ -861,7 +871,7 @@ public class ModChart : UdonSharpBehaviour
         }
         else //String
         {
-            //PathType OR AnimationState
+            //PathType OR AnimationState or Swap mod
             mod.param = (string)modData[3];
 
             if (modData[4].GetType() == typeof(GameObject))
@@ -883,6 +893,11 @@ public class ModChart : UdonSharpBehaviour
                 {
                     mod.smoothing = string.Empty;
                 }
+            }
+            else //String 2 = "easing"
+            {
+                mod.smoothing = (string)modData[4];
+                mod.actor = (GameObject)modData[5];
             }
         }
 

@@ -75,7 +75,7 @@ public class Mods : UdonSharpBehaviour
     public void Update()
     {
         if (playing)
-        { 
+        {
             PlayMod();
             return;
         }
@@ -221,6 +221,9 @@ public class Mods : UdonSharpBehaviour
                 break;
             case 50:
                 mods.stopParticles(this, particles);
+                break;
+            case 51:
+                mods.swap(this, playfield);
                 break;
             default:
                 //???
@@ -406,6 +409,9 @@ public class Mods : UdonSharpBehaviour
             case "fadeEdge":
                 originalFloat = playfield.fadeEdge;
                 magnitude = originalFloat + originalMag;
+                break;
+            case "swap":
+                playfield.SetupSwap(param);
                 break;
             default:
                 Debug.LogWarning("Mod doesn't support updated iterations: " + function);
@@ -780,6 +786,11 @@ public class Mods : UdonSharpBehaviour
             case "stopParticles":
                 particles = actor.GetComponent<ParticleSystem>();
                 modFunc = 50;
+                break;
+            case "swap":
+                playfield = actor.GetComponent<Playfield>();
+                playfield.SetupSwap(param);
+                modFunc = 51;
                 break;
             default:
                 Debug.LogError($"MOD ERROR: Mod {function} not found at {beat}");

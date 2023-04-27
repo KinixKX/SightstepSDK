@@ -49,8 +49,23 @@ public class Playfield : UdonSharpBehaviour
     public Vector3 _defaultSpawnU;
     public Vector3 _defaultSpawnR;
 
+    public Vector3[] _defaultReceptor;
+    public Vector3[] _defaultSpawn;
+    public int[] layout = new int[4];
+
     public Vector3 _defaultDistanceRtoS;
-    
+
+    public Vector3 _receptorLlastPos;
+    public Vector3 _receptorDlastPos;
+    public Vector3 _receptorUlastPos;
+    public Vector3 _receptorRlastPos;
+
+    public Vector3 _spawnLlastPos;
+    public Vector3 _spawnDlastPos;
+    public Vector3 _spawnUlastPos;
+    public Vector3 _spawnRlastPos;
+   
+
     #endregion
 
     #region Judgement Graphics
@@ -112,6 +127,19 @@ public class Playfield : UdonSharpBehaviour
         arrowSizeX = 1;
         arrowSizeY = 1;
         arrowSizeZ = 1;
+
+        _defaultReceptor = new Vector3[4];
+        _defaultSpawn = new Vector3[4];
+
+        _defaultReceptor[0] = _defaultReceptorL;
+        _defaultReceptor[1] = _defaultReceptorD;
+        _defaultReceptor[2] = _defaultReceptorU;
+        _defaultReceptor[3] = _defaultReceptorR;
+
+        _defaultSpawn[0] = _defaultSpawnL;
+        _defaultSpawn[1] = _defaultSpawnD;
+        _defaultSpawn[2] = _defaultSpawnU;
+        _defaultSpawn[3] = _defaultSpawnR;
     }
 
     public void UpdateArrows()
@@ -120,6 +148,40 @@ public class Playfield : UdonSharpBehaviour
         //{
         //    arrowObjects.pooledObjects[i].LogicUpdate();
         //}
+    }
+
+    public void SetupSwap(string configuration)
+    {
+        layout = new int[4];
+        for(int i = 0; i < configuration.Length; i++)
+        {
+            switch (configuration[i])
+            {
+                case 'L':
+                    layout[i] = 0;
+                    break;
+                case 'D':
+                    layout[i] = 1;
+                    break;
+                case 'U':
+                    layout[i] = 2;
+                    break;
+                case 'R':
+                    layout[i] = 3;
+                    break;
+            }
+        }
+
+
+        _receptorLlastPos = ReceptorL.transform.localPosition;
+        _receptorDlastPos = ReceptorD.transform.localPosition;
+        _receptorUlastPos = ReceptorU.transform.localPosition;
+        _receptorRlastPos = ReceptorR.transform.localPosition;
+
+        _spawnLlastPos = spawnL.transform.localPosition;
+        _spawnDlastPos = spawnD.transform.localPosition;
+        _spawnUlastPos = spawnU.transform.localPosition;
+        _spawnRlastPos = spawnR.transform.localPosition;
     }
 
     public void SetDark()
@@ -226,20 +288,28 @@ public class Playfield : UdonSharpBehaviour
         }
     }
 
-    public void SetArrowSize()
+    public void SwapColumns(float perc)
     {
-        foreach (Arrow a in arrowObjects.pooledObjects)
-        {
-            a.ScaleApply();
-        }
+        ReceptorL.transform.localPosition = Vector3.LerpUnclamped(_receptorLlastPos, _defaultReceptor[layout[0]], perc);
+        ReceptorD.transform.localPosition = Vector3.LerpUnclamped(_receptorDlastPos, _defaultReceptor[layout[1]], perc);
+        ReceptorU.transform.localPosition = Vector3.LerpUnclamped(_receptorUlastPos, _defaultReceptor[layout[2]], perc);
+        ReceptorR.transform.localPosition = Vector3.LerpUnclamped(_receptorRlastPos, _defaultReceptor[layout[3]], perc);
+
+        spawnL.transform.localPosition = Vector3.LerpUnclamped(_spawnLlastPos, _defaultSpawn[layout[0]], perc);
+        spawnD.transform.localPosition = Vector3.LerpUnclamped(_spawnDlastPos, _defaultSpawn[layout[1]], perc);
+        spawnU.transform.localPosition = Vector3.LerpUnclamped(_spawnUlastPos, _defaultSpawn[layout[2]], perc);
+        spawnR.transform.localPosition = Vector3.LerpUnclamped(_spawnRlastPos, _defaultSpawn[layout[3]], perc);
     }
-    public void SetArrowRotations()
-    {
-        foreach (Arrow a in arrowObjects.pooledObjects)
-        {
-            a.OffsetApply();
-        }
-    }
+
+    ///No longer used as it's more expensive to call every frame every arrow through another method, than to have the arrows call the method themselves every frame all the time
+    //public void SetArrowSize()
+    //{
+
+    //}
+    //public void SetArrowRotations()
+    //{
+
+    //}
 
     //TODO: broken cuz... I dont know how to do this 
     public void SetInvert()
@@ -394,8 +464,6 @@ public class Playfield : UdonSharpBehaviour
         SetStealth();
         SetExplode();
         SetWhiteOut();
-        SetArrowRotations();
-        SetArrowSize();
 
         SetFadeWidth();
         SetXFadeEnd();
