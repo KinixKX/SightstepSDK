@@ -141,18 +141,18 @@ public class Arrow : UdonSharpBehaviour
     {
         if (!canBeHit)
             return;
-        
+
         float bps = songPlayer.beatsPerSecond;
-        
+
         float songTime = songPlayer.songTime;
         float noteTime = setTiming * bps;
-        
+
         if (songTime > noteTime + 0.150f)
         {
             playfield.SendMiss();
             DisableArrow();
         }
-        
+
         float progress = (songTime - spawnTime) / (noteTime - spawnTime);
 
         Vector3 position = Vector3.LerpUnclamped(spawnPoint.position, targetPoint.position, progress);
@@ -161,6 +161,9 @@ public class Arrow : UdonSharpBehaviour
         Vector3 finalPosition = position + smoothing;
 
         gameObject.transform.position = finalPosition;
+
+        OffsetApply();
+        ScaleApply();
     }
 
     public Vector3 ApplySmoothing(float perc)
